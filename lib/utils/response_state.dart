@@ -1,0 +1,1 @@
+enum ResponseState { loading, done, error }

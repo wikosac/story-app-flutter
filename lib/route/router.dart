@@ -1,16 +1,17 @@
 import 'package:go_router/go_router.dart';
-import 'package:story_app/ui/login_screen.dart';
+import 'package:story_app/ui/login_page.dart';
+import 'package:story_app/ui/register_page.dart';
 
 final router = GoRouter(
-  initialLocation: '/',
+  initialLocation: '/login',
   routes: [
     GoRoute(
-      path: '/',
-      builder: (context, state) => const LoginScreen(),
+      path: '/login',
+      builder: (context, state) => const LoginPage(),
     ),
-    // GoRoute(
-    //   path: '/home',
-    //   builder: (context, state) => HomeScreen(),
-    // ),
+    GoRoute(
+      path: '/register',
+      builder: (context, state) => const RegisterPage(),
+    ),
   ],
 );

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:story_app/route/router.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+class LoginPage extends StatelessWidget {
+  const LoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +91,12 @@ class LoginScreen extends StatelessWidget {
                       //   },
                       // ),
                       const SizedBox(height: 16.0),
-                      const Text('Daftar'),
+                      GestureDetector(
+                        onTap: () {
+                          router.go('/register');
+                        },
+                        child: const Text('Daftar'),
+                      ),
                     ],
                   ),
                 ),
