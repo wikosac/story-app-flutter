@@ -18,7 +18,7 @@ final router = GoRouter(
         GoRoute(
           path: 'register',
           name: Routes.register,
-          builder: (context, state) => const RegisterPage(),
+          builder: (context, state) => RegisterPage(),
         ),
       ]
     ),

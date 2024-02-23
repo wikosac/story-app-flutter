@@ -1,14 +1,17 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-import 'package:story_app/data/api/api_service.dart';
+import 'package:story_app/common/style.dart';
 import 'package:story_app/data/provider/user_provider.dart';
 import 'package:story_app/route/router.dart';
 import 'package:story_app/utils/response_state.dart';
+import 'package:story_app/utils/utils.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
 
+  final _formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
@@ -28,60 +31,8 @@ class LoginPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      TextField(
-                        controller: emailController,
-                        decoration: const InputDecoration(
-                          labelText: 'Email',
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: InputBorder.none,
-                        ),
-                        keyboardType: TextInputType.emailAddress,
-                      ),
-                      const SizedBox(height: 16.0),
-                      TextField(
-                        controller: passwordController,
-                        decoration: const InputDecoration(
-                          labelText: 'Password',
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: InputBorder.none,
-                        ),
-                        obscureText: true,
-                      ),
-                      const SizedBox(height: 32.0),
-                      Consumer<UserProvider>(
-                        builder: (context, provider, _) {
-                          return ElevatedButton(
-                            onPressed: () async {
-                              onSubmit(context, provider);
-                            },
-                            style: ButtonStyle(
-                              shape: MaterialStateProperty.all<OutlinedBorder>(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(2.0),
-                                ),
-                              ),
-                            ),
-                            child: provider.state == ResponseState.loading
-                                ? const CircularProgressIndicator()
-                                : const Text('Masuk'),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 16.0),
-                      GestureDetector(
-                        onTap: () {
-                          router.goNamed(Routes.register);
-                        },
-                        child: const Text('Daftar'),
-                      ),
-                    ],
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                  child: _buildForm(),
                 ),
               ],
             ),
@@ -91,31 +42,91 @@ class LoginPage extends StatelessWidget {
     );
   }
 
+  Form _buildForm() {
+    return Form(
+      key: _formKey,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          TextFormField(
+            controller: emailController,
+            decoration: formFieldDecor('Email'),
+            keyboardType: TextInputType.emailAddress,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter your email';
+              }
+              if (!RegExp(r'^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                return 'Please enter a valid email';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16.0),
+          TextFormField(
+            controller: passwordController,
+            decoration: formFieldDecor('Password'),
+            obscureText: true,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter your password';
+              }
+              if (value.length < 8) {
+                return 'Password must be at least 8 characters';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 32.0),
+          Consumer<UserProvider>(
+            builder: (context, provider, _) {
+              return ElevatedButton(
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    onSubmit(context, provider);
+                  }
+                },
+                child: provider.state == ResponseState.loading
+                    ? const CircularProgressIndicator()
+                    : const Text('Login'),
+              );
+            },
+          ),
+          const SizedBox(height: 16.0),
+          RichText(
+            text: TextSpan(
+              style: const TextStyle(fontSize: 14),
+              children: [
+                const TextSpan(
+                  text: 'Not registered? register ',
+                  style: TextStyle(color: Colors.black, fontWeight: FontWeight.w300),
+                ),
+                TextSpan(
+                  text: 'here',
+                  style: const TextStyle(
+                    color: Colors.blue,
+                    decoration: TextDecoration.underline,
+                    fontWeight: FontWeight.w300
+                  ),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () {
+                      router.goNamed(Routes.register);
+                    },
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void onSubmit(BuildContext context, UserProvider provider) async {
     String email = emailController.text;
     String password = passwordController.text;
-    if (email.isEmpty || password.isEmpty) {
-      showSnackBar(context, 'Form tidak boleh kosong');
-    } else {
-      LoginResponse response = await provider.login(email, password);
-      if (response.error == false) {
-        router.goNamed(Routes.home);
-      }
-      if (!context.mounted) return;
+    await provider.login(email, password).then((response) {
+      if (response.error == false) router.goNamed(Routes.home);
       showSnackBar(context, response.message);
-    }
-  }
-
-  void showSnackBar(BuildContext context, String msg) {
-    final message = capitalizeFirstLetter(msg);
-    var snackBar = SnackBar(
-      content: Text(message),
-      duration: const Duration(seconds: 3),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
-
-  String capitalizeFirstLetter(String text) {
-    return text.substring(0, 1).toUpperCase() + text.substring(1).toLowerCase();
+    });
   }
 }
