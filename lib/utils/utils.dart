@@ -15,15 +15,15 @@ String capitalizeFirstLetter(String text) {
 }
 
 Text primaryText(String txt) {
-  return Text(txt, style: TextStyle(color: lightColorScheme.primary),);
+  return Text(txt, style: TextStyle(color: lightTheme.primary),);
 }
 
 InputDecoration formFieldDecor(String label) {
   return InputDecoration(
     labelText: label,
-    labelStyle: TextStyle(color: lightColorScheme.primary),
+    labelStyle: TextStyle(color: lightTheme.primary),
     filled: true,
-    fillColor: lightColorScheme.primaryContainer,
+    fillColor: lightTheme.primaryContainer,
     border: InputBorder.none,
     contentPadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
   );

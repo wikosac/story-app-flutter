@@ -2,7 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:story_app/common/style.dart';
-import 'package:story_app/data/model/user.dart';
+import 'package:story_app/data/api/api_service.dart';
 import 'package:story_app/data/provider/user_provider.dart';
 import 'package:story_app/route/router.dart';
 import 'package:story_app/utils/response_state.dart';
@@ -25,14 +25,15 @@ class RegisterPage extends StatelessWidget {
               Text(
                 'Register',
                 style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: lightColorScheme.primary),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: lightTheme.primary,
+                ),
               ),
               const SizedBox(height: 32),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                child: _buildForm(),
+                child: _buildForm(context),
               ),
             ],
           ),
@@ -41,7 +42,7 @@ class RegisterPage extends StatelessWidget {
     );
   }
 
-  Form _buildForm() {
+  Form _buildForm(BuildContext context) {
     return Form(
       key: _formKey,
       child: Column(
@@ -89,14 +90,8 @@ class RegisterPage extends StatelessWidget {
           Consumer<UserProvider>(
             builder: (context, provider, _) {
               return ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    User data = User.fromJson(_userData);
-                    await provider.registerUser(data).then((response) {
-                      if (response.error == false) router.goNamed(Routes.login);
-                      showSnackBar(context, response.message);
-                    });
-                  }
+                onPressed: () {
+                  onSubmit(context, provider);
                 },
                 child: provider.state == ResponseState.loading
                     ? const CircularProgressIndicator()
@@ -111,18 +106,21 @@ class RegisterPage extends StatelessWidget {
               children: [
                 const TextSpan(
                   text: 'Already registered? login ',
-                  style: TextStyle(color: Colors.black, fontWeight: FontWeight.w300),
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w300,
+                  ),
                 ),
                 TextSpan(
                   text: 'here',
                   style: const TextStyle(
                     color: Colors.blue,
                     decoration: TextDecoration.underline,
-                    fontWeight: FontWeight.w300
+                    fontWeight: FontWeight.w300,
                   ),
                   recognizer: TapGestureRecognizer()
                     ..onTap = () {
-                      router.goNamed(Routes.login);
+                      context.goNamed(Routes.login);
                     },
                 ),
               ],
@@ -131,5 +129,16 @@ class RegisterPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void onSubmit(BuildContext context, UserProvider provider) async {
+    if (_formKey.currentState!.validate()) {
+      User user = User.fromJson(_userData);
+      ApiResponse response = await provider.registerUser(user);
+      if (response.error == false && context.mounted) {
+        context.goNamed(Routes.login);
+      }
+      if (context.mounted) showSnackBar(context, response.message);
+    }
   }
 }
