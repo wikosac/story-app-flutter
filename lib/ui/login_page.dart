@@ -133,7 +133,7 @@ class LoginPage extends StatelessWidget {
       String password = passwordController.text;
       LoginResponse response = await provider.login(email, password);
       if (response.error == false) {
-        if (context.mounted) context.goNamed(Routes.home);
+        if (context.mounted) context.goNamed(Routes.navigation);
         LoginResult result = response.loginResult!;
         auth.setCredential(result.token, result.name, email);
       }

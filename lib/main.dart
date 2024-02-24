@@ -5,6 +5,7 @@ import 'package:story_app/common/style.dart';
 import 'package:story_app/data/api/api_service.dart';
 import 'package:story_app/data/preferences/auth_preferences.dart';
 import 'package:story_app/data/provider/auth_provider.dart';
+import 'package:story_app/data/provider/story_provider.dart';
 import 'package:story_app/data/provider/user_provider.dart';
 import 'package:story_app/route/router.dart';
 
@@ -28,7 +29,10 @@ class MainApp extends StatelessWidget {
               sharedPreferences: SharedPreferences.getInstance(),
             ),
           ),
-        )
+        ),
+        ChangeNotifierProvider(
+          create: (_) => StoryProvider(apiService: ApiService()),
+        ),
       ],
       child: Consumer<AuthProvider>(
         builder: (context, auth, _) {

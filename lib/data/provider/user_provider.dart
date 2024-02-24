@@ -24,7 +24,7 @@ class UserProvider extends ChangeNotifier {
       return response;
     } catch (e) {
       _setState(ResponseState.error);
-      throw Exception('Gagal mendaftarkan pengguna: $e');
+      throw Exception('Failed to register: $e');
     }
   }
 
@@ -36,7 +36,8 @@ class UserProvider extends ChangeNotifier {
       return response;
     } catch (e) {
       _setState(ResponseState.error);
-      throw Exception('Gagal login: $e');
+      throw Exception('Failed login: $e');
     }
   }
+
 }

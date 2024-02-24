@@ -1,6 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'package:story_app/data/model/api_response.dart';
 import 'package:story_app/data/model/login_response.dart';
+import 'package:story_app/data/model/stories_response.dart';
 import 'package:story_app/data/model/user.dart';
 
 export 'package:story_app/data/model/api_response.dart';
@@ -19,7 +20,7 @@ class ApiService {
       final data = apiResponseFromJson(response.body);
       return data;
     } catch (e) {
-      throw Exception('Gagal: $e');
+      throw Exception(e);
     }
   }
 
@@ -34,9 +35,21 @@ class ApiService {
       );
       return loginResponseFromJson(response.body);
     } catch (e) {
-      throw Exception('Gagal: $e');
+      throw Exception(e);
     }
   }
 
-// Future<List<dynamic>> getUsers();
+  Future<StoriesResponse> getAllStories(String token) async {
+    try {
+      final http.Response response = await http.get(
+        Uri.parse('$_baseUrl/login'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        }
+      );
+      return storiesResponseFromJson(response.body);
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
 }

@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:story_app/common/navigation.dart';
 import 'package:story_app/data/provider/auth_provider.dart';
+import 'package:story_app/data/provider/story_provider.dart';
 import 'package:story_app/ui/home_page.dart';
 import 'package:story_app/ui/login_page.dart';
 import 'package:story_app/ui/register_page.dart';
@@ -12,7 +14,7 @@ part 'route_name.dart';
 
 GoRouter createRouter(BuildContext context) {
   AuthProvider authProvider = Provider.of(context, listen: false);
-  String initial = authProvider.token.isEmpty ? '/login' : '/home';
+  String initial = authProvider.token.isEmpty ? '/login' : '/navigation';
 
   return GoRouter(
     initialLocation: initial,
@@ -29,9 +31,9 @@ GoRouter createRouter(BuildContext context) {
             ),
           ]),
       GoRoute(
-        path: '/home',
-        name: Routes.home,
-        builder: (context, state) => const HomePage(),
+        path: '/navigation',
+        name: Routes.navigation,
+        builder: (context, state) => const Navigation(),
       ),
     ],
     errorBuilder: (context, state) {
