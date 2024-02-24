@@ -19,28 +19,30 @@ GoRouter createRouter(BuildContext context) {
     initialLocation: initial,
     routes: [
       GoRoute(
-          path: '/login',
-          name: Routes.login,
-          builder: (context, state) => LoginPage(),
-          routes: [
-            GoRoute(
-              path: 'register',
-              name: Routes.register,
-              builder: (context, state) => RegisterPage(),
-            ),
-          ]),
+        path: '/login',
+        name: Routes.login,
+        builder: (context, state) => LoginPage(),
+        routes: [
+          GoRoute(
+            path: 'register',
+            name: Routes.register,
+            builder: (context, state) => RegisterPage(),
+          ),
+        ],
+      ),
       GoRoute(
-          path: '/navigation',
-          name: Routes.navigation,
-          builder: (context, state) => const Navigation(),
-          routes: [
-            GoRoute(
-              path: ':id',
-              name: Routes.detail,
-              builder: (context, state) =>
-                  DetailPage(id: state.pathParameters['id']!),
-            ),
-          ]),
+        path: '/navigation',
+        name: Routes.navigation,
+        builder: (context, state) => const Navigation(),
+        routes: [
+          GoRoute(
+            path: ':id',
+            name: Routes.detail,
+            builder: (context, state) =>
+                DetailPage(id: state.pathParameters['id']!),
+          ),
+        ],
+      ),
     ],
     errorBuilder: (context, state) {
       throw Exception('Error 404');

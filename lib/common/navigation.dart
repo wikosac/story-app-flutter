@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:story_app/ui/home_page.dart';
+import 'package:story_app/ui/profile_page.dart';
 
 class Navigation extends StatefulWidget {
   const Navigation({super.key});
@@ -29,7 +30,7 @@ class _NavigationState extends State<Navigation> {
   final List<Widget> _listWidget = [
     const HomePage(),
     const HomePage(),
-    const HomePage(),
+    const ProfilePage(),
   ];
 
   @override

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:story_app/common/style.dart';
 
 void showSnackBar(BuildContext context, String msg) {
@@ -27,4 +28,8 @@ InputDecoration formFieldDecor(String label) {
     border: InputBorder.none,
     contentPadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
   );
+}
+
+String convertDateTime(DateTime time) {
+  return DateFormat.yMMMMd().format(time);
 }

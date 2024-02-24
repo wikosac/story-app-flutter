@@ -6,6 +6,7 @@ import 'package:story_app/data/provider/auth_provider.dart';
 import 'package:story_app/data/provider/story_provider.dart';
 import 'package:story_app/route/router.dart';
 import 'package:story_app/utils/response_state.dart';
+import 'package:story_app/utils/utils.dart';
 import 'package:story_app/utils/widgets.dart';
 
 class HomePage extends StatelessWidget {
@@ -132,7 +133,7 @@ class HomePage extends StatelessWidget {
             child: Row(
               children: [
                 Text(
-                  story.createdAt.toString(),
+                  convertDateTime(story.createdAt),
                   style: const TextStyle(
                     color: Colors.grey,
                     fontSize: 10,
