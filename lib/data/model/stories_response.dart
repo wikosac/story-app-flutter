@@ -32,8 +32,8 @@ class Story {
   final String description;
   final String photoUrl;
   final DateTime createdAt;
-  final double lat;
-  final double lon;
+  final double? lat;
+  final double? lon;
 
   Story({
     required this.id,
@@ -41,8 +41,8 @@ class Story {
     required this.description,
     required this.photoUrl,
     required this.createdAt,
-    required this.lat,
-    required this.lon,
+    this.lat,
+    this.lon,
   });
 
   factory Story.fromJson(Map<String, dynamic> json) => Story(

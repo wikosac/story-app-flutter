@@ -42,7 +42,7 @@ class ApiService {
   Future<StoriesResponse> getAllStories(String token) async {
     try {
       final http.Response response = await http.get(
-        Uri.parse('$_baseUrl/login'),
+        Uri.parse('$_baseUrl/stories'),
         headers: {
           'Authorization': 'Bearer $token',
         }

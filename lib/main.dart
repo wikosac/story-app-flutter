@@ -10,6 +10,7 @@ import 'package:story_app/data/provider/user_provider.dart';
 import 'package:story_app/route/router.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MainApp());
 }
 
@@ -30,8 +31,9 @@ class MainApp extends StatelessWidget {
             ),
           ),
         ),
-        ChangeNotifierProvider(
+        ChangeNotifierProxyProvider<AuthProvider, StoryProvider>(
           create: (_) => StoryProvider(apiService: ApiService()),
+          update: (context, auth, story) => story!..getAllStories(auth.token),
         ),
       ],
       child: Consumer<AuthProvider>(

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:story_app/data/api/api_service.dart';
 import 'package:story_app/data/model/stories_response.dart';
-import 'package:story_app/data/provider/auth_provider.dart';
 import 'package:story_app/data/provider/story_provider.dart';
 import 'package:story_app/utils/response_state.dart';
 
@@ -16,77 +14,124 @@ class HomePage extends StatelessWidget {
         title: const Text('Story App'),
         actions: const [
           Icon(Icons.favorite_border),
-          SizedBox(
-            width: 12,
-          ),
+          SizedBox(width: 16),
+          Icon(Icons.messenger_outline),
+          SizedBox(width: 16),
         ],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 8.0,
-                horizontal: 16.0,
+              padding: const EdgeInsets.only(top: 16.0, right: 16, left: 16),
+              child: Row(
+                children: [
+                  _profilePicture(78, 78, 48),
+                ],
               ),
-              child: _buildStories(),
             ),
-            _buildPostList(context),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: _buildPostList(context),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildStories() {
-    return Row(
+  Widget _profilePicture(double width, double height, double size) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: Colors.pink, // Change border color as needed
+          width: 2.0,
+        ),
+      ),
+      child: ClipOval(
+        child: Icon(Icons.person, size: size),
+      ),
+    );
+  }
+
+  Widget _postItem(Story story) {
+    return Column(
       children: [
-        Container(
-          width: 60,
-          height: 60,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: Colors.pink, // Change border color as needed
-              width: 2.0,
-            ),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  _profilePicture(42, 42, 16),
+                  const SizedBox(width: 8),
+                  Text('Anon'),
+                ],
+              ),
+              const Icon(Icons.more_vert),
+            ],
           ),
-          child: const ClipOval(
-            child: Icon(Icons.person),
+        ),
+        Image.network(
+          story.photoUrl,
+          fit: BoxFit.cover,
+        ),
+        const Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.favorite,
+                    color: Colors.red,
+                  ),
+                  SizedBox(width: 16),
+                  Icon(Icons.mode_comment_outlined),
+                  SizedBox(width: 16),
+                  Icon(Icons.send),
+                ],
+              ),
+              Icon(Icons.bookmark_border_rounded),
+            ],
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.0),
+          child: Row(
+            children: [
+              Text('username'),
+              SizedBox(width: 8),
+              Text('desc'),
+            ],
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.0),
+          child: Row(
+            children: [
+              Text(
+                'Jan 11, 2024',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 10,
+                ),
+              )
+            ],
           ),
         ),
       ],
     );
   }
 
-  Widget _imagePost(Story story) {
-    return Container(
-      width: 300,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 2,
-            blurRadius: 7,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12.0),
-        child: Image.network(
-          story.photoUrl,
-          fit: BoxFit.cover,
-        ),
-      ),
-    );
-  }
-
   Widget _buildPostList(BuildContext context) {
     return Consumer<StoryProvider>(builder: (context, provider, _) {
       List<Story>? data = provider.listStory;
-      print('data: $data');
       switch (provider.state) {
         case ResponseState.loading:
           return const CircularProgressIndicator();
@@ -95,8 +140,13 @@ class HomePage extends StatelessWidget {
               ? ListView.builder(
                   itemCount: data.length,
                   itemBuilder: (context, index) {
-                    return _imagePost(data[index]);
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: _postItem(data[index]),
+                    );
                   },
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
                 )
               : const Text('No data');
         case ResponseState.error:
