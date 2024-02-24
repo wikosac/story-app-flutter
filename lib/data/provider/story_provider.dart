@@ -9,9 +9,12 @@ class StoryProvider extends ChangeNotifier {
   StoryProvider({required this.apiService});
 
   List<Story>? _listStory;
+  Story? _story;
   ResponseState? _state;
 
   List<Story>? get listStory => _listStory;
+
+  Story? get story => _story;
 
   ResponseState? get state => _state;
 
@@ -32,4 +35,19 @@ class StoryProvider extends ChangeNotifier {
       throw Exception('Failed fetch data: $e');
     }
   }
+
+  Future<DetailResponse> getDetailStory(String token, String id) async {
+    try {
+      _setState(ResponseState.loading);
+      final response = await apiService.getDetailStory(token, id);
+      print('detail response: ${response.message}');
+      if (response.error == false) _story = response.story!;
+      _setState(ResponseState.done);
+      return response;
+    } catch (e) {
+      _setState(ResponseState.error);
+      throw Exception('Failed fetch data: $e');
+    }
+  }
+
 }

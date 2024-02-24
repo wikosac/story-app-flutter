@@ -31,10 +31,6 @@ class MainApp extends StatelessWidget {
             ),
           ),
         ),
-        ChangeNotifierProxyProvider<AuthProvider, StoryProvider>(
-          create: (_) => StoryProvider(apiService: ApiService()),
-          update: (context, auth, story) => story!..getAllStories(auth.token),
-        ),
       ],
       child: Consumer<AuthProvider>(
         builder: (context, auth, _) {

@@ -5,4 +5,5 @@ abstract class Routes {
   static const register = 'register';
   static const error = 'error';
   static const navigation = 'navigation';
+  static const detail = 'detail';
 }

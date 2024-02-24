@@ -3,8 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:story_app/common/navigation.dart';
 import 'package:story_app/data/provider/auth_provider.dart';
-import 'package:story_app/data/provider/story_provider.dart';
-import 'package:story_app/ui/home_page.dart';
+import 'package:story_app/ui/detail_page.dart';
 import 'package:story_app/ui/login_page.dart';
 import 'package:story_app/ui/register_page.dart';
 
@@ -31,10 +30,17 @@ GoRouter createRouter(BuildContext context) {
             ),
           ]),
       GoRoute(
-        path: '/navigation',
-        name: Routes.navigation,
-        builder: (context, state) => const Navigation(),
-      ),
+          path: '/navigation',
+          name: Routes.navigation,
+          builder: (context, state) => const Navigation(),
+          routes: [
+            GoRoute(
+              path: ':id',
+              name: Routes.detail,
+              builder: (context, state) =>
+                  DetailPage(id: state.pathParameters['id']!),
+            ),
+          ]),
     ],
     errorBuilder: (context, state) {
       throw Exception('Error 404');

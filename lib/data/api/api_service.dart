@@ -52,4 +52,18 @@ class ApiService {
       throw Exception(e);
     }
   }
+
+  Future<DetailResponse> getDetailStory(String token, String id) async {
+    try {
+      final http.Response response = await http.get(
+        Uri.parse('$_baseUrl/stories/$id'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        }
+      );
+      return detailResponseFromJson(response.body);
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
 }

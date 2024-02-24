@@ -65,3 +65,23 @@ class Story {
         "lon": lon,
       };
 }
+
+DetailResponse detailResponseFromJson(String str) => DetailResponse.fromJson(json.decode(str));
+
+class DetailResponse {
+  final bool error;
+  final String message;
+  final Story? story;
+
+  DetailResponse({
+    required this.error,
+    required this.message,
+    this.story,
+  });
+
+  factory DetailResponse.fromJson(Map<String, dynamic> json) => DetailResponse(
+    error: json["error"],
+    message: json["message"],
+    story: json.containsKey('story') ? Story.fromJson(json["story"]) : null,
+  );
+}
