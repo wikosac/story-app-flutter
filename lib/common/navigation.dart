@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:story_app/route/router.dart';
 import 'package:story_app/ui/home_page.dart';
 import 'package:story_app/ui/profile_page.dart';
-import 'package:story_app/ui/upload_page.dart';
 
 class Navigation extends StatefulWidget {
   const Navigation({super.key});

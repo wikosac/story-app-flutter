@@ -18,7 +18,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final RefreshController _refreshController =
-  RefreshController(initialRefresh: false);
+      RefreshController(initialRefresh: false);
 
   void _onRefresh() async {
     StoryProvider sp = Provider.of(context, listen: false);
@@ -131,8 +131,8 @@ class _ProfilePageState extends State<ProfilePage> {
                             children: [
                               Text(
                                 auth.email,
-                                style:
-                                    const TextStyle(fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
@@ -165,7 +165,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     const SizedBox(
                       height: 16,
                     ),
-                    _buildGridView(sortedList),
+                    sortedList.isEmpty
+                        ? SizedBox(
+                            height: MediaQuery.of(context).size.width,
+                            width: MediaQuery.of(context).size.width,
+                            child: const Center(
+                              child: Text('No Post'),
+                            ),
+                          )
+                        : _buildGridView(sortedList),
                   ],
                 ),
               ),
@@ -200,7 +208,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 return Center(
                   child: CircularProgressIndicator(
                     value: event.expectedTotalBytes != null
-                        ? event.cumulativeBytesLoaded / event.expectedTotalBytes!
+                        ? event.cumulativeBytesLoaded /
+                            event.expectedTotalBytes!
                         : null,
                   ),
                 );

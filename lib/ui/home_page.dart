@@ -209,7 +209,13 @@ class _HomePageState extends State<HomePage> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                 )
-              : const Text('No data');
+              : SizedBox(
+                  height: MediaQuery.of(context).size.width,
+                  width: MediaQuery.of(context).size.width,
+                  child: const Center(
+                    child: Text('No Data'),
+                  ),
+                );
         case ResponseState.error:
           return SizedBox(
             height: MediaQuery.of(context).size.width,
