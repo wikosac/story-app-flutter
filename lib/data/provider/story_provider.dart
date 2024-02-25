@@ -70,7 +70,6 @@ class StoryProvider extends ChangeNotifier {
     try {
       _setState(ResponseState.loading);
       final response = await apiService.getDetailStory(token, id);
-      print('detail response: ${response.message}');
       if (response.error == false) _story = response.story!;
       _setState(ResponseState.done);
       return response;

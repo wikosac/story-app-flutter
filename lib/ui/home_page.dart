@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:story_app/data/model/stories_response.dart';
+import 'package:story_app/data/provider/auth_provider.dart';
 import 'package:story_app/data/provider/story_provider.dart';
 import 'package:story_app/route/router.dart';
 import 'package:story_app/utils/response_state.dart';
@@ -20,7 +21,9 @@ class _HomePageState extends State<HomePage> {
       RefreshController(initialRefresh: false);
 
   void _onRefresh() async {
-    await Future.delayed(const Duration(seconds: 2));
+    StoryProvider sp = Provider.of(context, listen: false);
+    AuthProvider ap = Provider.of(context, listen: false);
+    sp.getAllStories(ap.token!);
     _refreshController.refreshCompleted();
   }
 
@@ -41,7 +44,7 @@ class _HomePageState extends State<HomePage> {
       ),
       body: SmartRefresher(
         controller: _refreshController,
-        onRefresh: _onRefresh,
+        onRefresh: () => _onRefresh(),
         child: SingleChildScrollView(
           child: _buildContent(context),
         ),
@@ -110,7 +113,8 @@ class _HomePageState extends State<HomePage> {
                   return Center(
                     child: CircularProgressIndicator(
                       value: event.expectedTotalBytes != null
-                          ? event.cumulativeBytesLoaded / event.expectedTotalBytes!
+                          ? event.cumulativeBytesLoaded /
+                              event.expectedTotalBytes!
                           : null,
                     ),
                   );
@@ -185,7 +189,13 @@ class _HomePageState extends State<HomePage> {
       List<Story>? data = provider.listStory;
       switch (provider.state) {
         case ResponseState.loading:
-          return const CircularProgressIndicator();
+          return SizedBox(
+            height: MediaQuery.of(context).size.width,
+            width: MediaQuery.of(context).size.width,
+            child: const Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
         case ResponseState.done:
           return data != null
               ? ListView.builder(
@@ -201,7 +211,13 @@ class _HomePageState extends State<HomePage> {
                 )
               : const Text('No data');
         case ResponseState.error:
-          return const Text('Error');
+          return SizedBox(
+            height: MediaQuery.of(context).size.width,
+            width: MediaQuery.of(context).size.width,
+            child: const Center(
+              child: Text('Network Error'),
+            ),
+          );
         case null:
           return const Text('Error: state null');
       }

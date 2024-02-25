@@ -128,6 +128,9 @@ class LoginPage extends StatelessWidget {
     AuthProvider auth,
   ) async {
     if (_formKey.currentState!.validate()) {
+      if (provider.state == ResponseState.error && context.mounted) {
+        showSnackBar(context, 'Network error');
+      }
       String email = emailController.text;
       String password = passwordController.text;
       LoginResponse response = await provider.login(email, password);

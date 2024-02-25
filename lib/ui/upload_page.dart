@@ -74,6 +74,9 @@ class _UploadPageState extends State<UploadPage> {
     BuildContext context,
   ) async {
     if (descController.text.isNotEmpty && pict.imageFile != null) {
+      if (provider.state == ResponseState.error && context.mounted) {
+        showSnackBar(context, 'Network error');
+      }
       final bytes = await pict.imageFile!.readAsBytes();
       ApiResponse response = await provider.addStory(
         token: auth.token!,
@@ -89,8 +92,8 @@ class _UploadPageState extends State<UploadPage> {
       ;
     } else {
       String msg = '';
-      if (pict.imageFile == null) msg = 'No picture';
       if (descController.text.isEmpty) msg = 'Description can\'t be empty';
+      if (pict.imageFile == null) msg = 'No picture';
       showSnackBar(context, msg);
     }
   }

@@ -38,7 +38,7 @@ class DetailPage extends StatelessWidget {
                   ? _buildContent(context, story)
                   : const Text('No data');
             case ResponseState.error:
-              return const Text('Error');
+              return const Center(child: Text('Network Error'));
             case null:
               return const Text('Error: state null');
           }

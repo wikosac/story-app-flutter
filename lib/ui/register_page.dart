@@ -133,6 +133,9 @@ class RegisterPage extends StatelessWidget {
 
   void onSubmit(BuildContext context, UserProvider provider) async {
     if (_formKey.currentState!.validate()) {
+      if (provider.state == ResponseState.error && context.mounted) {
+        showSnackBar(context, 'Network error');
+      }
       User user = User.fromJson(_userData);
       ApiResponse response = await provider.registerUser(user);
       if (response.error == false && context.mounted) {
