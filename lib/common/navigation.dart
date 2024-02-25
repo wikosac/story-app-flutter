@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:story_app/route/router.dart';
 import 'package:story_app/ui/home_page.dart';
 import 'package:story_app/ui/profile_page.dart';
+import 'package:story_app/ui/upload_page.dart';
 
 class Navigation extends StatefulWidget {
   const Navigation({super.key});
@@ -18,8 +20,16 @@ class _NavigationState extends State<Navigation> {
       label: 'Home',
     ),
     const BottomNavigationBarItem(
+      icon: Icon(Icons.search),
+      label: 'Search',
+    ),
+    const BottomNavigationBarItem(
       icon: Icon(Icons.add_box_outlined),
-      label: 'Add',
+      label: 'Upload',
+    ),
+    const BottomNavigationBarItem(
+      icon: Icon(Icons.video_collection_outlined),
+      label: 'Reels',
     ),
     const BottomNavigationBarItem(
       icon: Icon(Icons.person),
@@ -29,7 +39,9 @@ class _NavigationState extends State<Navigation> {
 
   final List<Widget> _listWidget = [
     const HomePage(),
-    const HomePage(),
+    const Placeholder(),
+    const Placeholder(),
+    const Placeholder(),
     const ProfilePage(),
   ];
 
@@ -41,11 +53,20 @@ class _NavigationState extends State<Navigation> {
         currentIndex: _bottomNavIndex,
         items: _bottomNavBarItems,
         onTap: (selected) {
-          setState(() {
-            _bottomNavIndex = selected;
-          });
+          if (selected == 2) {
+            context.goNamed(Routes.upload);
+          } else if (selected == 0 || selected == 4) {
+            setState(() {
+              _bottomNavIndex = selected;
+            });
+          }
         },
         iconSize: 28,
+        unselectedItemColor: Colors.grey,
+        selectedItemColor: Colors.black,
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        type: BottomNavigationBarType.fixed,
       ),
     );
   }

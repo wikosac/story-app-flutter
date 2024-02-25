@@ -9,12 +9,12 @@ class AuthProvider extends ChangeNotifier {
     _getCredential();
   }
 
-  late String _token;
+  String? _token;
   late String _name;
   late String _email;
   late ResponseState _state;
 
-  String get token => _token;
+  String? get token => _token;
 
   String get name => _name;
 

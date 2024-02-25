@@ -18,7 +18,7 @@ class DetailPage extends StatelessWidget {
     return ChangeNotifierProxyProvider<AuthProvider, StoryProvider>(
       create: (context) => StoryProvider(apiService: ApiService()),
       update: (context, auth, story) {
-        return story!..getDetailStory(auth.token, id);
+        return story!..getDetailStory(auth.token!, id);
       },
       child: Scaffold(
         appBar: AppBar(
@@ -69,10 +69,8 @@ class DetailPage extends StatelessWidget {
           ),
           filled: true,
           fillColor: Colors.grey[200],
-          // Adjust the color as needed
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(36.0),
-            // Adjust the radius as needed
             borderSide: BorderSide.none,
           ),
           contentPadding:
@@ -114,11 +112,28 @@ class DetailPage extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
-            child: Hero(
-              tag: story.id,
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.width,
               child: Image.network(
                 story.photoUrl,
                 fit: BoxFit.cover,
+                loadingBuilder: (context, child, event) {
+                  if (event == null) {
+                    return child;
+                  } else {
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: event.expectedTotalBytes != null
+                            ? event.cumulativeBytesLoaded / event.expectedTotalBytes!
+                            : null,
+                      ),
+                    );
+                  }
+                },
+                errorBuilder: (context, obj, trace) {
+                  return const Icon(Icons.broken_image, size: 100);
+                },
               ),
             ),
           ),

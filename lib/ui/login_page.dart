@@ -20,7 +20,6 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Material(
-        // color: Colors.white,
         child: Center(
           child: SingleChildScrollView(
             child: Column(

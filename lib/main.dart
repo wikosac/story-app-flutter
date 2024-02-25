@@ -5,6 +5,7 @@ import 'package:story_app/common/style.dart';
 import 'package:story_app/data/api/api_service.dart';
 import 'package:story_app/data/preferences/auth_preferences.dart';
 import 'package:story_app/data/provider/auth_provider.dart';
+import 'package:story_app/data/provider/picture_provider.dart';
 import 'package:story_app/data/provider/story_provider.dart';
 import 'package:story_app/data/provider/user_provider.dart';
 import 'package:story_app/route/router.dart';
@@ -30,6 +31,10 @@ class MainApp extends StatelessWidget {
               sharedPreferences: SharedPreferences.getInstance(),
             ),
           ),
+        ),
+        ChangeNotifierProxyProvider<AuthProvider, StoryProvider>(
+          create: (_) => StoryProvider(apiService: ApiService()),
+          update: (context, auth, story) => story!..getAllStories(auth.token!),
         ),
       ],
       child: Consumer<AuthProvider>(

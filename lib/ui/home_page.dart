@@ -1,16 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:story_app/data/api/api_service.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:story_app/data/model/stories_response.dart';
-import 'package:story_app/data/provider/auth_provider.dart';
 import 'package:story_app/data/provider/story_provider.dart';
 import 'package:story_app/route/router.dart';
 import 'package:story_app/utils/response_state.dart';
 import 'package:story_app/utils/utils.dart';
 import 'package:story_app/utils/widgets.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+
+  void _onRefresh() async {
+    await Future.delayed(const Duration(seconds: 2));
+    _refreshController.refreshCompleted();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,28 +39,32 @@ class HomePage extends StatelessWidget {
           SizedBox(width: 16),
         ],
       ),
-      body: SingleChildScrollView(
-        child: ChangeNotifierProxyProvider<AuthProvider, StoryProvider>(
-          create: (_) => StoryProvider(apiService: ApiService()),
-          update: (context, auth, story) => story!..getAllStories(auth.token),
-          child: Column(
+      body: SmartRefresher(
+        controller: _refreshController,
+        onRefresh: _onRefresh,
+        child: SingleChildScrollView(
+          child: _buildContent(context),
+        ),
+      ),
+    );
+  }
+
+  Column _buildContent(BuildContext context) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 16.0, right: 16, left: 16),
+          child: Row(
             children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 16.0, right: 16, left: 16),
-                child: Row(
-                  children: [
-                    profilePicture(78, 78, 48),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
-                child: _buildPostList(context),
-              ),
+              profilePicture(78, 78, 48),
             ],
           ),
         ),
-      ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16.0),
+          child: _buildPostList(context),
+        ),
+      ],
     );
   }
 
@@ -81,11 +97,28 @@ class HomePage extends StatelessWidget {
               ],
             ),
           ),
-          Hero(
-            tag: story.id,
+          SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.width,
             child: Image.network(
               story.photoUrl,
               fit: BoxFit.cover,
+              loadingBuilder: (context, child, event) {
+                if (event == null) {
+                  return child;
+                } else {
+                  return Center(
+                    child: CircularProgressIndicator(
+                      value: event.expectedTotalBytes != null
+                          ? event.cumulativeBytesLoaded / event.expectedTotalBytes!
+                          : null,
+                    ),
+                  );
+                }
+              },
+              errorBuilder: (context, obj, trace) {
+                return const Icon(Icons.broken_image, size: 100);
+              },
             ),
           ),
           const Padding(

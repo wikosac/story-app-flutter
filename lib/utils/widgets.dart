@@ -7,7 +7,7 @@ Widget profilePicture(double width, double height, double size) {
     decoration: BoxDecoration(
       shape: BoxShape.circle,
       border: Border.all(
-        color: Colors.pink, // Change border color as needed
+        color: Colors.pink,
         width: 2.0,
       ),
     ),

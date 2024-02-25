@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:story_app/data/api/api_service.dart';
 import 'package:story_app/data/model/stories_response.dart';
 import 'package:story_app/data/provider/auth_provider.dart';
 import 'package:story_app/data/provider/story_provider.dart';
@@ -12,30 +11,26 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProxyProvider<AuthProvider, StoryProvider>(
-      create: (_) => StoryProvider(apiService: ApiService()),
-      update: (context, auth, story) => story!..getAllStories(auth.token),
-      child: Consumer<AuthProvider>(
-        builder: (context, auth, _) {
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(
-                auth.name,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              actions: const [
-                Icon(Icons.menu),
-                SizedBox(width: 16),
-              ],
+    return Consumer<AuthProvider>(
+      builder: (context, auth, _) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(
+              auth.name,
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            body: switch (auth.state) {
-              ResponseState.loading => const CircularProgressIndicator(),
-              ResponseState.done => _buildContent(auth),
-              ResponseState.error => const Text('Error'),
-            },
-          );
-        },
-      ),
+            actions: const [
+              Icon(Icons.menu),
+              SizedBox(width: 16),
+            ],
+          ),
+          body: switch (auth.state) {
+            ResponseState.loading => const CircularProgressIndicator(),
+            ResponseState.done => _buildContent(auth),
+            ResponseState.error => const Text('Error'),
+          },
+        );
+      },
     );
   }
 

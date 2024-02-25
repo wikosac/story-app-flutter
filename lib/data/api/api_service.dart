@@ -1,4 +1,9 @@
+import 'dart:ffi';
+import 'dart:io';
+
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart';
 import 'package:story_app/data/model/api_response.dart';
 import 'package:story_app/data/model/login_response.dart';
 import 'package:story_app/data/model/stories_response.dart';
@@ -28,12 +33,44 @@ class ApiService {
     try {
       final http.Response response = await http.post(
         Uri.parse('$_baseUrl/login'),
-        body: {
-          "email": email,
-          "password": password
-        },
+        body: {"email": email, "password": password},
       );
       return loginResponseFromJson(response.body);
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  Future<ApiResponse> addStory(
+    String token,
+    String desc,
+    String fileName,
+    List<int> bytes,
+    Float? lat,
+    Float? lon,
+  ) async {
+    try {
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('$_baseUrl/stories'),
+      );
+
+      request.headers['Authorization'] = 'Bearer $token';
+      request.fields['description'] = desc;
+      if (lat != null) request.fields['lat'] = lat.toString();
+      if (lon != null) request.fields['lon'] = lon.toString();
+
+      var multipartFile = http.MultipartFile.fromBytes(
+        'photo',
+        bytes,
+        filename: fileName,
+      );
+      request.files.add(multipartFile);
+
+      var response = await request.send();
+      var responseData = await response.stream.bytesToString();
+
+      return apiResponseFromJson(responseData);
     } catch (e) {
       throw Exception(e);
     }
@@ -45,7 +82,7 @@ class ApiService {
         Uri.parse('$_baseUrl/stories'),
         headers: {
           'Authorization': 'Bearer $token',
-        }
+        },
       );
       return storiesResponseFromJson(response.body);
     } catch (e) {
@@ -59,7 +96,7 @@ class ApiService {
         Uri.parse('$_baseUrl/stories/$id'),
         headers: {
           'Authorization': 'Bearer $token',
-        }
+        },
       );
       return detailResponseFromJson(response.body);
     } catch (e) {
