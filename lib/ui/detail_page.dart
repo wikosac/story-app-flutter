@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:story_app/common/common.dart';
 import 'package:story_app/data/api/api_service.dart';
 import 'package:story_app/data/model/stories_response.dart';
 import 'package:story_app/data/provider/auth_provider.dart';
@@ -22,9 +23,9 @@ class DetailPage extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
-            'Post',
-            style: TextStyle(fontWeight: FontWeight.bold),
+          title: Text(
+            AppLocalizations.of(context)!.postTitle,
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
         ),
@@ -36,9 +37,9 @@ class DetailPage extends StatelessWidget {
             case ResponseState.done:
               return story != null
                   ? _buildContent(context, story)
-                  : const Text('No data');
+                  : Text(AppLocalizations.of(context)!.noData);
             case ResponseState.error:
-              return const Center(child: Text('Network Error'));
+              return Center(child: Text(AppLocalizations.of(context)!.networkError));
             case null:
               return const Text('Error: state null');
           }
@@ -47,7 +48,7 @@ class DetailPage extends StatelessWidget {
           builder: (context, provider, _) {
             Story? story = provider.story;
             return provider.state == ResponseState.done && story != null
-                ? _commentField()
+                ? _commentField(context)
                 : Container();
           },
         ),
@@ -55,13 +56,13 @@ class DetailPage extends StatelessWidget {
     );
   }
 
-  Widget _commentField() {
+  Widget _commentField(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: TextField(
         readOnly: true,
         decoration: InputDecoration(
-          hintText: 'Add a comment',
+          hintText: AppLocalizations.of(context)!.addComment,
           hintStyle: const TextStyle(
             fontSize: 12,
             color: Colors.grey,
@@ -166,9 +167,9 @@ class DetailPage extends StatelessWidget {
           const SizedBox(
             height: 32,
           ),
-          const Text(
-            'No comments yet',
-            style: TextStyle(fontWeight: FontWeight.bold),
+          Text(
+            AppLocalizations.of(context)!.commentDescription,
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           const SizedBox(
             height: 32,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:story_app/common/common.dart';
 import 'package:story_app/common/style.dart';
 import 'package:story_app/data/api/api_service.dart';
 import 'package:story_app/data/preferences/auth_preferences.dart';
@@ -43,6 +44,8 @@ class MainApp extends StatelessWidget {
             darkTheme: ThemeData(useMaterial3: true, colorScheme: darkTheme),
             title: 'Story App',
             routerConfig: createRouter(context),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
           );
         },
       ),

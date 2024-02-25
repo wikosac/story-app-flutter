@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:story_app/common/common.dart';
 import 'package:story_app/data/model/stories_response.dart';
 import 'package:story_app/data/provider/auth_provider.dart';
 import 'package:story_app/data/provider/story_provider.dart';
@@ -57,7 +58,9 @@ class _ProfilePageState extends State<ProfilePage> {
             ResponseState.loading =>
               const Center(child: CircularProgressIndicator()),
             ResponseState.done => _buildContent(auth),
-            ResponseState.error => const Center(child: Text('Error')),
+            ResponseState.error => Center(
+                child: Text(AppLocalizations.of(context)!.networkError),
+              ),
           },
         );
       },
@@ -94,31 +97,31 @@ class _ProfilePageState extends State<ProfilePage> {
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 18),
                             ),
-                            const Text('posts')
+                            Text(AppLocalizations.of(context)!.posts)
                           ],
                         ),
-                        const Column(
+                        Column(
                           children: [
-                            Text(
+                            const Text(
                               '0',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,
                               ),
                             ),
-                            Text('followers')
+                            Text(AppLocalizations.of(context)!.followers)
                           ],
                         ),
-                        const Column(
+                        Column(
                           children: [
-                            Text(
+                            const Text(
                               '0',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,
                               ),
                             ),
-                            Text('following')
+                            Text(AppLocalizations.of(context)!.following)
                           ],
                         ),
                       ],
@@ -169,8 +172,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         ? SizedBox(
                             height: MediaQuery.of(context).size.width,
                             width: MediaQuery.of(context).size.width,
-                            child: const Center(
-                              child: Text('No Post'),
+                            child: Center(
+                              child: Text(AppLocalizations.of(context)!.noPost),
                             ),
                           )
                         : _buildGridView(sortedList),
@@ -230,14 +233,14 @@ class _ProfilePageState extends State<ProfilePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Log Out'),
-          content: const Text('Are you sure?'),
+          title: Text(AppLocalizations.of(context)!.logout),
+          content: Text(AppLocalizations.of(context)!.logoutDescription),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: const Text('Cancel'),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
             Consumer<AuthProvider>(
               builder: (context, auth, _) {
@@ -245,11 +248,12 @@ class _ProfilePageState extends State<ProfilePage> {
                   onPressed: () {
                     auth.deleteCredential();
                     context.goNamed(Routes.login);
-                    showSnackBar(context, 'Logged Out!');
+                    showSnackBar(
+                        context, AppLocalizations.of(context)!.loggedOut);
                   },
-                  child: const Text(
-                    'Log Out',
-                    style: TextStyle(
+                  child: Text(
+                    AppLocalizations.of(context)!.logout,
+                    style: const TextStyle(
                       color: Colors.red,
                     ),
                   ),
@@ -261,4 +265,43 @@ class _ProfilePageState extends State<ProfilePage> {
       },
     );
   }
+
+  void showBottomSheetDialog(BuildContext context, void Function() onclick) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return SingleChildScrollView(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              children: [
+                GestureDetector(
+                  onTap: () => onclick(),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.logout, color: Colors.red),
+                      const SizedBox(width: 12),
+                      Text(
+                        AppLocalizations.of(context)!.logout,
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
 }

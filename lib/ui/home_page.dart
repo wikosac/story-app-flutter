@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:story_app/common/common.dart';
 import 'package:story_app/data/model/stories_response.dart';
 import 'package:story_app/data/provider/auth_provider.dart';
 import 'package:story_app/data/provider/story_provider.dart';
@@ -212,16 +213,16 @@ class _HomePageState extends State<HomePage> {
               : SizedBox(
                   height: MediaQuery.of(context).size.width,
                   width: MediaQuery.of(context).size.width,
-                  child: const Center(
-                    child: Text('No Data'),
+                  child: Center(
+                    child: Text(AppLocalizations.of(context)!.noData),
                   ),
                 );
         case ResponseState.error:
           return SizedBox(
             height: MediaQuery.of(context).size.width,
             width: MediaQuery.of(context).size.width,
-            child: const Center(
-              child: Text('Network Error'),
+            child: Center(
+              child: Text(AppLocalizations.of(context)!.networkError),
             ),
           );
         case null:

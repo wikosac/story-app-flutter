@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:story_app/common/common.dart';
 import 'package:story_app/common/style.dart';
 import 'package:story_app/data/api/api_service.dart';
 import 'package:story_app/data/provider/auth_provider.dart';
@@ -33,9 +34,9 @@ class _UploadPageState extends State<UploadPage> {
               context.pop();
             },
           ),
-          title: const Text(
-            'New post',
-            style: TextStyle(fontWeight: FontWeight.bold),
+          title: Text(
+            AppLocalizations.of(context)!.uploadTitle,
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
         ),
@@ -58,7 +59,7 @@ class _UploadPageState extends State<UploadPage> {
                 ),
                 child: provider.state == ResponseState.loading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Share'),
+                    : Text(AppLocalizations.of(context)!.shareButton),
               );
             },
           ),
@@ -75,7 +76,7 @@ class _UploadPageState extends State<UploadPage> {
   ) async {
     if (descController.text.isNotEmpty && pict.imageFile != null) {
       if (provider.state == ResponseState.error && context.mounted) {
-        showSnackBar(context, 'Network error');
+        showSnackBar(context, AppLocalizations.of(context)!.networkError);
       }
       final bytes = await pict.imageFile!.readAsBytes();
       ApiResponse response = await provider.addStory(
@@ -92,8 +93,8 @@ class _UploadPageState extends State<UploadPage> {
       ;
     } else {
       String msg = '';
-      if (descController.text.isEmpty) msg = 'Description can\'t be empty';
-      if (pict.imageFile == null) msg = 'No picture';
+      if (descController.text.isEmpty) msg = AppLocalizations.of(context)!.captionWarning;
+      if (pict.imageFile == null) msg = AppLocalizations.of(context)!.pictureWarning;
       showSnackBar(context, msg);
     }
   }
@@ -184,16 +185,16 @@ class _UploadPageState extends State<UploadPage> {
           padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
           child: TextField(
             controller: descController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               border: InputBorder.none,
-              hintText: 'Write a caption',
-              hintStyle: TextStyle(
+              hintText: AppLocalizations.of(context)!.captionDescription,
+              hintStyle: const TextStyle(
                 fontWeight: FontWeight.w300,
                 color: Colors.grey,
               ),
               filled: true,
               fillColor: Colors.transparent,
-              contentPadding: EdgeInsets.all(8.0),
+              contentPadding: const EdgeInsets.all(8.0),
             ),
             maxLines: null,
           ),

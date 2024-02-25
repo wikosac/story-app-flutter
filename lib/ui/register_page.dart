@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:story_app/common/common.dart';
 import 'package:story_app/common/style.dart';
 import 'package:story_app/data/api/api_service.dart';
 import 'package:story_app/data/provider/user_provider.dart';
@@ -23,7 +24,7 @@ class RegisterPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Register',
+                AppLocalizations.of(context)!.registerTitle,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
@@ -51,7 +52,7 @@ class RegisterPage extends StatelessWidget {
             decoration: formFieldDecor('Name'),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter your name';
+                return AppLocalizations.of(context)!.nameWarning;
               }
               return null;
             },
@@ -62,10 +63,10 @@ class RegisterPage extends StatelessWidget {
             decoration: formFieldDecor('Email'),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter your email';
+                return AppLocalizations.of(context)!.emailWarning;
               }
               if (!RegExp(r'^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                return 'Please enter a valid email';
+                return AppLocalizations.of(context)!.emailWarning2;
               }
               return null;
             },
@@ -77,10 +78,10 @@ class RegisterPage extends StatelessWidget {
             obscureText: true,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter your password';
+                return AppLocalizations.of(context)!.passwordWarning;
               }
               if (value.length < 8) {
-                return 'Password must be at least 8 characters';
+                return AppLocalizations.of(context)!.passwordWarning2;
               }
               return null;
             },
@@ -95,7 +96,7 @@ class RegisterPage extends StatelessWidget {
                 },
                 child: provider.state == ResponseState.loading
                     ? const CircularProgressIndicator()
-                    : const Text('Submit'),
+                    : Text(AppLocalizations.of(context)!.registerButton),
               );
             },
           ),
@@ -104,15 +105,15 @@ class RegisterPage extends StatelessWidget {
             text: TextSpan(
               style: const TextStyle(fontSize: 14),
               children: [
-                const TextSpan(
-                  text: 'Already registered? login ',
-                  style: TextStyle(
+                TextSpan(
+                  text: AppLocalizations.of(context)!.registerDescription,
+                  style: const TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.w300,
                   ),
                 ),
                 TextSpan(
-                  text: 'here',
+                  text: AppLocalizations.of(context)!.here,
                   style: const TextStyle(
                     color: Colors.blue,
                     decoration: TextDecoration.underline,
@@ -134,7 +135,7 @@ class RegisterPage extends StatelessWidget {
   void onSubmit(BuildContext context, UserProvider provider) async {
     if (_formKey.currentState!.validate()) {
       if (provider.state == ResponseState.error && context.mounted) {
-        showSnackBar(context, 'Network error');
+        showSnackBar(context, AppLocalizations.of(context)!.networkError);
       }
       User user = User.fromJson(_userData);
       ApiResponse response = await provider.registerUser(user);

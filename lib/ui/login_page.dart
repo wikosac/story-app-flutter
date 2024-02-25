@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:story_app/common/common.dart';
 import 'package:story_app/data/api/api_service.dart';
 import 'package:story_app/data/provider/auth_provider.dart';
 import 'package:story_app/data/provider/user_provider.dart';
@@ -54,10 +55,10 @@ class LoginPage extends StatelessWidget {
             keyboardType: TextInputType.emailAddress,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter your email';
+                return AppLocalizations.of(context)!.emailWarning;
               }
               if (!RegExp(r'^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                return 'Please enter a valid email';
+                return AppLocalizations.of(context)!.emailWarning2;
               }
               return null;
             },
@@ -69,10 +70,10 @@ class LoginPage extends StatelessWidget {
             obscureText: true,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter your password';
+                return AppLocalizations.of(context)!.passwordWarning;
               }
               if (value.length < 8) {
-                return 'Password must be at least 8 characters';
+                return AppLocalizations.of(context)!.passwordWarning2;
               }
               return null;
             },
@@ -86,7 +87,7 @@ class LoginPage extends StatelessWidget {
                 },
                 child: user.state == ResponseState.loading
                     ? const CircularProgressIndicator()
-                    : const Text('Login'),
+                    : Text(AppLocalizations.of(context)!.loginButton),
               );
             },
           ),
@@ -95,15 +96,15 @@ class LoginPage extends StatelessWidget {
             text: TextSpan(
               style: const TextStyle(fontSize: 14),
               children: [
-                const TextSpan(
-                  text: 'Not registered? register ',
-                  style: TextStyle(
+                TextSpan(
+                  text: AppLocalizations.of(context)!.loginDescription,
+                  style: const TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.w300,
                   ),
                 ),
                 TextSpan(
-                  text: 'here',
+                  text: AppLocalizations.of(context)!.here,
                   style: const TextStyle(
                     color: Colors.blue,
                     decoration: TextDecoration.underline,
@@ -129,7 +130,7 @@ class LoginPage extends StatelessWidget {
   ) async {
     if (_formKey.currentState!.validate()) {
       if (provider.state == ResponseState.error && context.mounted) {
-        showSnackBar(context, 'Network error');
+        showSnackBar(context, AppLocalizations.of(context)!.networkError);
       }
       String email = emailController.text;
       String password = passwordController.text;
