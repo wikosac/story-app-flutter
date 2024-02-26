@@ -7,4 +7,5 @@ abstract class Routes {
   static const navigation = 'navigation';
   static const detail = 'detail';
   static const upload = 'upload';
+  static const dialog = 'dialog';
 }

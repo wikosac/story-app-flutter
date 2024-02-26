@@ -7,6 +7,7 @@ import 'package:story_app/ui/detail_page.dart';
 import 'package:story_app/ui/login_page.dart';
 import 'package:story_app/ui/register_page.dart';
 import 'package:story_app/ui/upload_page.dart';
+import 'package:story_app/utils/custom_dialog.dart';
 
 export 'package:go_router/go_router.dart';
 
@@ -39,6 +40,11 @@ GoRouter createRouter(BuildContext context) {
         name: Routes.navigation,
         builder: (context, state) => const Navigation(),
         routes: [
+          GoRoute(
+            path: 'dialog',
+            name: Routes.dialog,
+            builder: (context, state) => const CustomDialog(),
+          ),
           GoRoute(
             path: 'upload',
             name: Routes.upload,

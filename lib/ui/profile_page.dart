@@ -47,7 +47,7 @@ class _ProfilePageState extends State<ProfilePage> {
               IconButton(
                 onPressed: () => showBottomSheetDialog(
                   context,
-                  () => _showLogoutConfirmationDialog(context),
+                  () => context.goNamed(Routes.dialog),
                 ),
                 icon: const Icon(Icons.menu),
               ),
@@ -173,7 +173,12 @@ class _ProfilePageState extends State<ProfilePage> {
                             height: MediaQuery.of(context).size.width,
                             width: MediaQuery.of(context).size.width,
                             child: Center(
-                              child: Text(AppLocalizations.of(context)!.noPost),
+                              child: Text(
+                                AppLocalizations.of(context)!.noPost,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           )
                         : _buildGridView(sortedList),
@@ -237,9 +242,7 @@ class _ProfilePageState extends State<ProfilePage> {
           content: Text(AppLocalizations.of(context)!.logoutDescription),
           actions: <Widget>[
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
+              onPressed: () => context.goNamed(Routes.navigation),
               child: Text(AppLocalizations.of(context)!.cancel),
             ),
             Consumer<AuthProvider>(

@@ -30,9 +30,7 @@ class _UploadPageState extends State<UploadPage> {
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.close),
-            onPressed: () {
-              context.pop();
-            },
+            onPressed: () => context.goNamed(Routes.navigation),
           ),
           title: Text(
             AppLocalizations.of(context)!.uploadTitle,
@@ -88,9 +86,8 @@ class _UploadPageState extends State<UploadPage> {
       if (context.mounted) showSnackBar(context, response.message);
       if (response.error == false && context.mounted) {
         provider.getAllStories(auth.token!);
-        context.pop();
+        context.goNamed(Routes.navigation);
       }
-      ;
     } else {
       String msg = '';
       if (descController.text.isEmpty) msg = AppLocalizations.of(context)!.captionWarning;
