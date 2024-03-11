@@ -1,9 +1,12 @@
 import 'dart:convert';
 
+import 'package:json_annotation/json_annotation.dart';
+
+part 'api_response.g.dart';
+
 ApiResponse apiResponseFromJson(String str) => ApiResponse.fromJson(json.decode(str));
 
-String apiResponseToJson(ApiResponse data) => json.encode(data.toJson());
-
+@JsonSerializable()
 class ApiResponse {
   final bool error;
   final String message;
@@ -13,13 +16,7 @@ class ApiResponse {
     required this.message,
   });
 
-  factory ApiResponse.fromJson(Map<String, dynamic> json) => ApiResponse(
-    error: json["error"],
-    message: json["message"],
-  );
+  factory ApiResponse.fromJson(Map<String, dynamic> json) => _$ApiResponseFromJson(json);
 
-  Map<String, dynamic> toJson() => {
-    "error": error,
-    "message": message,
-  };
+  Map<String, dynamic> toJson() => _$ApiResponseToJson(this);
 }

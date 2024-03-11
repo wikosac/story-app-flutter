@@ -1,11 +1,17 @@
 import 'dart:convert';
 
+import 'package:json_annotation/json_annotation.dart';
+
+part 'login_response.g.dart';
+
 LoginResponse loginResponseFromJson(String str) =>
     LoginResponse.fromJson(json.decode(str));
 
+@JsonSerializable()
 class LoginResponse {
   final bool error;
   final String message;
+  @JsonKey(name: "loginResult")
   final LoginResult? loginResult;
 
   LoginResponse({
@@ -14,15 +20,10 @@ class LoginResponse {
     this.loginResult,
   });
 
-  factory LoginResponse.fromJson(Map<String, dynamic> json) => LoginResponse(
-        error: json["error"],
-        message: json["message"],
-        loginResult: json.containsKey('loginResult')
-            ? LoginResult.fromJson(json['loginResult'])
-            : null,
-      );
+  factory LoginResponse.fromJson(Map<String, dynamic> json) => _$LoginResponseFromJson(json);
 }
 
+@JsonSerializable()
 class LoginResult {
   final String userId;
   final String name;
@@ -34,15 +35,7 @@ class LoginResult {
     required this.token,
   });
 
-  factory LoginResult.fromJson(Map<String, dynamic> json) => LoginResult(
-        userId: json["userId"],
-        name: json["name"],
-        token: json["token"],
-      );
+  factory LoginResult.fromJson(Map<String, dynamic> json) => _$LoginResultFromJson(json);
 
-  Map<String, dynamic> toJson() => {
-        "userId": userId,
-        "name": name,
-        "token": token,
-      };
+  Map<String, dynamic> toJson() => _$LoginResultToJson(this);
 }

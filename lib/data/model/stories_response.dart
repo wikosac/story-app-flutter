@@ -1,11 +1,17 @@
 import 'dart:convert';
 
+import 'package:json_annotation/json_annotation.dart';
+
+part 'stories_response.g.dart';
+
 StoriesResponse storiesResponseFromJson(String str) =>
     StoriesResponse.fromJson(json.decode(str));
 
+@JsonSerializable()
 class StoriesResponse {
   final bool error;
   final String message;
+  @JsonKey(name: "listStory")
   final List<Story>? listStory;
 
   StoriesResponse({
@@ -14,18 +20,10 @@ class StoriesResponse {
     this.listStory,
   });
 
-  factory StoriesResponse.fromJson(Map<String, dynamic> json) =>
-      StoriesResponse(
-        error: json["error"],
-        message: json["message"],
-        listStory: json.containsKey('listStory')
-            ? List<Story>.from(
-                json["listStory"].map((x) => Story.fromJson(x)),
-              )
-            : null,
-      );
+  factory StoriesResponse.fromJson(Map<String, dynamic> json) => _$StoriesResponseFromJson(json);
 }
 
+@JsonSerializable()
 class Story {
   final String id;
   final String name;
@@ -45,32 +43,18 @@ class Story {
     this.lon,
   });
 
-  factory Story.fromJson(Map<String, dynamic> json) => Story(
-        id: json["id"],
-        name: json["name"],
-        description: json["description"],
-        photoUrl: json["photoUrl"],
-        createdAt: DateTime.parse(json["createdAt"]),
-        lat: json["lat"]?.toDouble(),
-        lon: json["lon"]?.toDouble(),
-      );
+  factory Story.fromJson(Map<String, dynamic> json) => _$StoryFromJson(json);
 
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "description": description,
-        "photoUrl": photoUrl,
-        "createdAt": createdAt.toIso8601String(),
-        "lat": lat,
-        "lon": lon,
-      };
+  Map<String, dynamic> toJson() => _$StoryToJson(this);
 }
 
 DetailResponse detailResponseFromJson(String str) => DetailResponse.fromJson(json.decode(str));
 
+@JsonSerializable()
 class DetailResponse {
   final bool error;
   final String message;
+  @JsonKey(name: "story")
   final Story? story;
 
   DetailResponse({
@@ -79,9 +63,5 @@ class DetailResponse {
     this.story,
   });
 
-  factory DetailResponse.fromJson(Map<String, dynamic> json) => DetailResponse(
-    error: json["error"],
-    message: json["message"],
-    story: json.containsKey('story') ? Story.fromJson(json["story"]) : null,
-  );
+  factory DetailResponse.fromJson(Map<String, dynamic> json) => _$DetailResponseFromJson(json);
 }
