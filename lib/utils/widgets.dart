@@ -16,3 +16,17 @@ Widget profilePicture(double width, double height, double size) {
     ),
   );
 }
+
+Widget backButton() {
+  return Container(
+    width: 42,
+    height: 42,
+    decoration: const BoxDecoration(
+      color: Colors.white,
+      shape: BoxShape.circle,
+    ),
+    child: const ClipOval(
+      child: Icon(Icons.arrow_back, size: 28),
+    ),
+  );
+}

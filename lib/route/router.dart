@@ -5,6 +5,8 @@ import 'package:story_app/common/navigation.dart';
 import 'package:story_app/data/provider/auth_provider.dart';
 import 'package:story_app/ui/detail_page.dart';
 import 'package:story_app/ui/login_page.dart';
+import 'package:story_app/ui/maps_page.dart';
+import 'package:story_app/ui/picker_map_page.dart';
 import 'package:story_app/ui/register_page.dart';
 import 'package:story_app/ui/upload_page.dart';
 import 'package:story_app/utils/custom_dialog.dart';
@@ -63,6 +65,13 @@ GoRouter createRouter(BuildContext context) {
                 );
               },
             ),
+            routes: [
+              GoRoute(
+                path: 'picker',
+                name: Routes.mapPicker,
+                builder: (context, state) => const PickerScreen(),
+              ),
+            ]
           ),
           GoRoute(
             path: ':id',
@@ -81,7 +90,14 @@ GoRouter createRouter(BuildContext context) {
                     ).animate(animation),
                     child: child,
                   );
-                }),
+                },),
+            routes: [
+              GoRoute(
+                path: 'map',
+                name: Routes.map,
+                builder: (context, state) => const MapsPage(),
+              ),
+            ]
           ),
         ],
       ),

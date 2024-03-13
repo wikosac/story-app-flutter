@@ -197,6 +197,25 @@ class _UploadPageState extends State<UploadPage> {
           ),
         ),
         const Divider(thickness: 0.5),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: GestureDetector(
+            onTap: () => context.goNamed(Routes.mapPicker),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.location_on_outlined),
+                    const SizedBox(width: 8),
+                    Text(AppLocalizations.of(context)!.addLocation),
+                  ],
+                ),
+                const Icon(Icons.arrow_forward_ios),
+              ],
+            ),
+          ),
+        )
       ],
     );
   }

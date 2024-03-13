@@ -5,6 +5,7 @@ import 'package:story_app/data/api/api_service.dart';
 import 'package:story_app/data/model/stories_response.dart';
 import 'package:story_app/data/provider/auth_provider.dart';
 import 'package:story_app/data/provider/story_provider.dart';
+import 'package:story_app/route/router.dart';
 import 'package:story_app/utils/response_state.dart';
 import 'package:story_app/utils/utils.dart';
 import 'package:story_app/utils/widgets.dart';
@@ -28,6 +29,23 @@ class DetailPage extends StatelessWidget {
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
+          actions: [
+            Consumer<StoryProvider>(builder: (context, provider, _) {
+              Story? story = provider.story;
+              if (story?.lat != null) {
+                return IconButton(
+                  onPressed: () {
+                    context.goNamed(
+                      Routes.map,
+                      pathParameters: {'id': id},
+                    );
+                  },
+                  icon: const Icon(Icons.map),
+                );
+              }
+              return Container();
+            }),
+          ],
         ),
         body: Consumer<StoryProvider>(builder: (context, provider, _) {
           Story? story = provider.story;
@@ -39,7 +57,8 @@ class DetailPage extends StatelessWidget {
                   ? _buildContent(context, story)
                   : Text(AppLocalizations.of(context)!.noData);
             case ResponseState.error:
-              return Center(child: Text(AppLocalizations.of(context)!.networkError));
+              return Center(
+                  child: Text(AppLocalizations.of(context)!.networkError));
             case null:
               return const Text('Error: state null');
           }
@@ -126,7 +145,8 @@ class DetailPage extends StatelessWidget {
                     return Center(
                       child: CircularProgressIndicator(
                         value: event.expectedTotalBytes != null
-                            ? event.cumulativeBytesLoaded / event.expectedTotalBytes!
+                            ? event.cumulativeBytesLoaded /
+                                event.expectedTotalBytes!
                             : null,
                       ),
                     );

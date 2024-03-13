@@ -8,4 +8,6 @@ abstract class Routes {
   static const detail = 'detail';
   static const upload = 'upload';
   static const dialog = 'dialog';
+  static const map = 'map';
+  static const mapPicker = 'map_picker';
 }

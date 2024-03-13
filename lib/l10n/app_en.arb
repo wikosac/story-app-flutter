@@ -15,6 +15,7 @@
   "addComment": "Add a comment",
   "uploadTitle": "New Post",
   "captionDescription": "Write a caption",
+  "addLocation": "Add Location",
   "shareButton": "Share",
   "pictureWarning": "No picture",
   "captionWarning": "Description can't be empty",
@@ -24,7 +25,7 @@
   "logout": "Log Out",
   "logoutDescription": "Are you sure?",
   "cancel": "Cancel",
-  "loggedOut": "Berhasil keluar",
+  "loggedOut": "Logged Out",
   "noPost": "No posts",
   "networkError": "Network error",
   "noData": "No data"
