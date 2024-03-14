@@ -11,6 +11,7 @@ import 'package:story_app/route/router.dart';
 import 'package:story_app/utils/response_state.dart';
 import 'package:story_app/utils/utils.dart';
 import 'package:story_app/utils/widgets.dart';
+import 'package:story_app/variant/flavor_config.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -38,11 +39,28 @@ class _HomePageState extends State<HomePage> {
           'Story App',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        actions: const [
-          Icon(Icons.favorite_border),
-          SizedBox(width: 16),
-          Icon(Icons.messenger_outline),
-          SizedBox(width: 16),
+        actions: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.black,
+                width: 1.0,
+              ),
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Text(
+              FlavorConfig.instance.values.appType,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          const Icon(Icons.favorite_border),
+          const SizedBox(width: 16),
+          const Icon(Icons.messenger_outline),
+          const SizedBox(width: 16),
         ],
       ),
       body: SmartRefresher(

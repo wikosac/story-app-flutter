@@ -3,6 +3,7 @@ import 'package:geocoding/geocoding.dart' as geo;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
+import 'package:story_app/common/common.dart';
 import 'package:story_app/data/provider/picture_provider.dart';
 import 'package:story_app/route/router.dart';
 import 'package:story_app/utils/utils.dart';
@@ -28,34 +29,32 @@ class _PickerMapPageState extends State<PickerMapPage> {
       body: Center(
         child: Stack(
           children: [
-            SafeArea(
-              child: GoogleMap(
-                initialCameraPosition: CameraPosition(
-                  target: indonesia,
-                  zoom: 4,
-                ),
-                markers: markers,
-                myLocationEnabled: true,
-                myLocationButtonEnabled: false,
-                zoomControlsEnabled: false,
-                rotateGesturesEnabled: false,
-                onMapCreated: (controller) async {
-                  setState(() {
-                    mapController = controller;
-                  });
-                },
-                onLongPress: (LatLng latLng) => onTapGoogleMap(latLng),
-                onTap: (LatLng latLng) {
-                  if (placemark != null) {
-                    setState(() {
-                      placemark = null;
-                      markers.clear();
-                    });
-                  } else {
-                    onTapGoogleMap(latLng);
-                  }
-                },
+            GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: indonesia,
+                zoom: 4,
               ),
+              markers: markers,
+              myLocationEnabled: true,
+              myLocationButtonEnabled: false,
+              zoomControlsEnabled: false,
+              rotateGesturesEnabled: false,
+              onMapCreated: (controller) async {
+                setState(() {
+                  mapController = controller;
+                });
+              },
+              onLongPress: (LatLng latLng) => onTapGoogleMap(latLng),
+              onTap: (LatLng latLng) {
+                if (placemark != null) {
+                  setState(() {
+                    placemark = null;
+                    markers.clear();
+                  });
+                } else {
+                  onTapGoogleMap(latLng);
+                }
+              },
             ),
             Positioned(
               top: 16.0,
@@ -104,7 +103,7 @@ class _PickerMapPageState extends State<PickerMapPage> {
               '${placemark.subLocality}, ${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea}, ${placemark.country}',
               style: Theme.of(context).textTheme.bodySmall,
             ),
-            const SizedBox(height: 8,),
+            const SizedBox(height: 8),
             Consumer<PictureProvider>(
               builder: (context, provider, state) {
                 return ElevatedButton(
@@ -115,9 +114,9 @@ class _PickerMapPageState extends State<PickerMapPage> {
                   style: ElevatedButton.styleFrom(
                     elevation: 0,
                     backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white
+                    foregroundColor: Colors.white,
                   ),
-                  child: const Text('Gunakan lokasi ini'),
+                  child: Text(AppLocalizations.of(context)!.useLocation),
                 );
               },
             )
@@ -143,7 +142,7 @@ class _PickerMapPageState extends State<PickerMapPage> {
     makeMarker(latLng, street, address);
 
     mapController.animateCamera(
-      CameraUpdate.newLatLng(latLng),
+      CameraUpdate.newLatLngZoom(latLng, 8),
     );
   }
 
@@ -157,7 +156,9 @@ class _PickerMapPageState extends State<PickerMapPage> {
     if (!gpsEnabled) {
       gpsEnabled = await location.requestService();
       if (!gpsEnabled) {
-        if (context.mounted) showSnackBar(context, 'Lokasi tidak aktif');
+        if (context.mounted) {
+          showSnackBar(context, AppLocalizations.of(context)!.gpsOff);
+        }
         return;
       }
     }
@@ -166,7 +167,9 @@ class _PickerMapPageState extends State<PickerMapPage> {
     if (permissionGranted == PermissionStatus.denied) {
       permissionGranted = await location.requestPermission();
       if (permissionGranted != PermissionStatus.granted) {
-        if (context.mounted) showSnackBar(context, 'Izin lokasi tidak ada');
+        if (context.mounted) {
+          showSnackBar(context, AppLocalizations.of(context)!.noPermission);
+        }
         return;
       }
     }
@@ -174,23 +177,7 @@ class _PickerMapPageState extends State<PickerMapPage> {
     locationData = await location.getLocation();
     final latLng = LatLng(locationData.latitude!, locationData.longitude!);
 
-    final info =
-        await geo.placemarkFromCoordinates(latLng.latitude, latLng.longitude);
-
-    final place = info[0];
-    final street = place.street!;
-    final address =
-        '${place.subLocality}, ${place.locality}, ${place.postalCode}, ${place.country}';
-
-    setState(() {
-      placemark = place;
-    });
-
-    makeMarker(latLng, street, address);
-
-    mapController.animateCamera(
-      CameraUpdate.newLatLngZoom(latLng, 16),
-    );
+    onTapGoogleMap(latLng);
   }
 
   void makeMarker(LatLng latLng, String street, String address) {

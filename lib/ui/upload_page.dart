@@ -11,6 +11,7 @@ import 'package:story_app/data/provider/story_provider.dart';
 import 'package:story_app/route/router.dart';
 import 'package:story_app/utils/response_state.dart';
 import 'package:story_app/utils/utils.dart';
+import 'package:story_app/variant/flavor_config.dart';
 
 class UploadPage extends StatefulWidget {
   const UploadPage({super.key});
@@ -215,54 +216,57 @@ class _UploadPageState extends State<UploadPage> {
           ),
         ),
         const Divider(thickness: 0.5),
-        Consumer<PictureProvider>(
-          builder: (context, provider, state) {
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: provider.location == null
-                  ? GestureDetector(
-                      onTap: () => context.goNamed(Routes.mapPicker),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
+        FlavorConfig.instance.flavor == FlavorType.pro
+            ? Consumer<PictureProvider>(
+                builder: (context, provider, state) {
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: provider.location == null
+                        ? GestureDetector(
+                            onTap: () => context.goNamed(Routes.mapPicker),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    const Icon(Icons.location_on_outlined),
+                                    const SizedBox(width: 8),
+                                    Text(AppLocalizations.of(context)!
+                                        .addLocation),
+                                  ],
+                                ),
+                                const Icon(Icons.arrow_forward_ios),
+                              ],
+                            ),
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Icon(Icons.location_on_outlined),
-                              const SizedBox(width: 8),
-                              Text(AppLocalizations.of(context)!.addLocation),
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.location_on_outlined,
+                                    color: Colors.blue,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    provider.location!,
+                                    style: const TextStyle(color: Colors.blue),
+                                  ),
+                                ],
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  provider.setLocation(null, null);
+                                },
+                                child: const Icon(Icons.close),
+                              ),
                             ],
                           ),
-                          const Icon(Icons.arrow_forward_ios),
-                        ],
-                      ),
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.location_on_outlined,
-                              color: Colors.blue,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              provider.location!,
-                              style: const TextStyle(color: Colors.blue),
-                            ),
-                          ],
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            provider.setLocation(null, null);
-                          },
-                          child: const Icon(Icons.close),
-                        ),
-                      ],
-                    ),
-            );
-          },
-        )
+                  );
+                },
+              )
+            : const SizedBox(),
       ],
     );
   }
