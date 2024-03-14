@@ -28,5 +28,8 @@
   "loggedOut": "Logged Out",
   "noPost": "No posts",
   "networkError": "Network error",
-  "noData": "No data"
+  "noData": "No data",
+  "gpsOff": "Location off",
+  "noPermission": "Missing location permission",
+  "useLocation": "Use this location"
 }

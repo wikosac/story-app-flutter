@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:story_app/common/navigation.dart';
@@ -69,9 +70,9 @@ GoRouter createRouter(BuildContext context) {
               GoRoute(
                 path: 'picker',
                 name: Routes.mapPicker,
-                builder: (context, state) => const PickerScreen(),
+                builder: (context, state) => const PickerMapPage(),
               ),
-            ]
+            ],
           ),
           GoRoute(
             path: ':id',
@@ -79,25 +80,30 @@ GoRouter createRouter(BuildContext context) {
             builder: (context, state) =>
                 DetailPage(id: state.pathParameters['id']!),
             pageBuilder: (context, state) => CustomTransitionPage(
-                key: state.pageKey,
-                child: DetailPage(id: state.pathParameters['id']!),
-                transitionsBuilder:
-                    (context, animation, secondaryAnimation, child) {
-                  return SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0.0, 1.0),
-                      end: const Offset(0.0, 0.0),
-                    ).animate(animation),
-                    child: child,
-                  );
-                },),
+              key: state.pageKey,
+              child: DetailPage(id: state.pathParameters['id']!),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                return SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(0.0, 1.0),
+                    end: const Offset(0.0, 0.0),
+                  ).animate(animation),
+                  child: child,
+                );
+              },
+            ),
             routes: [
               GoRoute(
-                path: 'map',
+                path: 'map/:lat/:lon',
                 name: Routes.map,
-                builder: (context, state) => const MapsPage(),
+                builder: (context, state) => MapsPage(
+                  id: state.pathParameters['id']!,
+                  lat: state.pathParameters['lat']!,
+                  lon: state.pathParameters['lon']!,
+                ),
               ),
-            ]
+            ],
           ),
         ],
       ),

@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:http/http.dart' as http;
 import 'package:story_app/data/model/api_response.dart';
 import 'package:story_app/data/model/login_response.dart';
@@ -43,8 +41,8 @@ class ApiService {
     String desc,
     String fileName,
     List<int> bytes,
-    Float? lat,
-    Float? lon,
+    double? lat,
+    double? lon,
   ) async {
     try {
       var request = http.MultipartRequest(

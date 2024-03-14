@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart' as geo;
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:story_app/common/common.dart';
@@ -91,9 +93,28 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     profilePicture(42, 42, 16),
                     const SizedBox(width: 8),
-                    Text(
-                      story.name,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          story.name,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        story.lat != null
+                            ? FutureBuilder<String>(
+                                future: _getLocation(story),
+                                builder: (_, snapshot) {
+                                  return Text(
+                                    snapshot.data ?? '',
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  );
+                                },
+                              )
+                            : const SizedBox(),
+                      ],
                     ),
                   ],
                 ),
@@ -229,5 +250,15 @@ class _HomePageState extends State<HomePage> {
           return const Text('Error: state null');
       }
     });
+  }
+
+  Future<String> _getLocation(Story story) async {
+    final latLng = LatLng(story.lat!, story.lon!);
+
+    final info =
+        await geo.placemarkFromCoordinates(latLng.latitude, latLng.longitude);
+
+    final place = info[0];
+    return place.subLocality ?? '';
   }
 }

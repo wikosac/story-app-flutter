@@ -28,5 +28,8 @@
   "loggedOut": "Berhasil keluar",
   "noPost": "Tidak ada postingan",
   "networkError": "Kesalahan jaringan",
-  "noData": "Tidak ada data"
+  "noData": "Tidak ada data",
+  "gpsOff": "Lokasi tidak aktif",
+  "noPermission": "Izin lokasi tidak ada",
+  "useLocation": "Gunakan lokasi ini"
 }

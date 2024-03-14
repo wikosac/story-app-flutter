@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart' as geo;
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:story_app/common/common.dart';
 import 'package:story_app/data/api/api_service.dart';
@@ -37,7 +39,11 @@ class DetailPage extends StatelessWidget {
                   onPressed: () {
                     context.goNamed(
                       Routes.map,
-                      pathParameters: {'id': id},
+                      pathParameters: {
+                        'id': id,
+                        'lat': story!.lat.toString(),
+                        'lon': story.lon.toString(),
+                      },
                     );
                   },
                   icon: const Icon(Icons.map),
@@ -113,9 +119,28 @@ class DetailPage extends StatelessWidget {
                   children: [
                     profilePicture(42, 42, 16),
                     const SizedBox(width: 8),
-                    Text(
-                      story.name,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          story.name,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        story.lat != null
+                            ? FutureBuilder<String>(
+                                future: _getLocation(story),
+                                builder: (_, snapshot) {
+                                  return Text(
+                                    snapshot.data ?? '',
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  );
+                                },
+                              )
+                            : const SizedBox(),
+                      ],
                     ),
                   ],
                 ),
@@ -197,5 +222,15 @@ class DetailPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<String> _getLocation(Story story) async {
+    final latLng = LatLng(story.lat!, story.lon!);
+
+    final info =
+        await geo.placemarkFromCoordinates(latLng.latitude, latLng.longitude);
+
+    final place = info[0];
+    return place.subLocality ?? '';
   }
 }

@@ -21,46 +21,58 @@ class UploadPage extends StatefulWidget {
 
 class _UploadPageState extends State<UploadPage> {
   final descController = TextEditingController();
+  late PictureProvider _pictureProvider;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _pictureProvider = Provider.of<PictureProvider>(context, listen: false);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _pictureProvider.setImagePath(null);
+    _pictureProvider.setImageFile(null);
+    _pictureProvider.setLocation(null, null);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => PictureProvider(),
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: () => context.goNamed(Routes.navigation),
-          ),
-          title: Text(
-            AppLocalizations.of(context)!.uploadTitle,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => context.goNamed(Routes.navigation),
         ),
-        body: Consumer<PictureProvider>(
-          builder: (context, provider, state) {
-            return SingleChildScrollView(
-              child: _buildContent(context, provider),
+        title: Text(
+          AppLocalizations.of(context)!.uploadTitle,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+      ),
+      body: Consumer<PictureProvider>(
+        builder: (context, provider, state) {
+          return SingleChildScrollView(
+            child: _buildContent(context, provider),
+          );
+        },
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Consumer3<StoryProvider, AuthProvider, PictureProvider>(
+          builder: (context, provider, auth, pict, state) {
+            return ElevatedButton(
+              onPressed: () => onSubmit(pict, provider, auth, context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: lightTheme.primary,
+                foregroundColor: lightTheme.onPrimary,
+              ),
+              child: provider.state == ResponseState.loading
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : Text(AppLocalizations.of(context)!.shareButton),
             );
           },
-        ),
-        bottomNavigationBar: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Consumer3<StoryProvider, AuthProvider, PictureProvider>(
-            builder: (context, provider, auth, pict, state) {
-              return ElevatedButton(
-                onPressed: () => onSubmit(pict, provider, auth, context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: lightTheme.primary,
-                  foregroundColor: lightTheme.onPrimary,
-                ),
-                child: provider.state == ResponseState.loading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : Text(AppLocalizations.of(context)!.shareButton),
-              );
-            },
-          ),
         ),
       ),
     );
@@ -82,6 +94,8 @@ class _UploadPageState extends State<UploadPage> {
         desc: descController.text,
         fileName: pict.imageFile!.name,
         bytes: bytes,
+        lat: pict.latLng?.latitude,
+        lon: pict.latLng?.longitude,
       );
       if (context.mounted) showSnackBar(context, response.message);
       if (response.error == false && context.mounted) {
@@ -90,8 +104,12 @@ class _UploadPageState extends State<UploadPage> {
       }
     } else {
       String msg = '';
-      if (descController.text.isEmpty) msg = AppLocalizations.of(context)!.captionWarning;
-      if (pict.imageFile == null) msg = AppLocalizations.of(context)!.pictureWarning;
+      if (descController.text.isEmpty) {
+        msg = AppLocalizations.of(context)!.captionWarning;
+      }
+      if (pict.imageFile == null) {
+        msg = AppLocalizations.of(context)!.pictureWarning;
+      }
       showSnackBar(context, msg);
     }
   }
@@ -197,24 +215,53 @@ class _UploadPageState extends State<UploadPage> {
           ),
         ),
         const Divider(thickness: 0.5),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: GestureDetector(
-            onTap: () => context.goNamed(Routes.mapPicker),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.location_on_outlined),
-                    const SizedBox(width: 8),
-                    Text(AppLocalizations.of(context)!.addLocation),
-                  ],
-                ),
-                const Icon(Icons.arrow_forward_ios),
-              ],
-            ),
-          ),
+        Consumer<PictureProvider>(
+          builder: (context, provider, state) {
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: provider.location == null
+                  ? GestureDetector(
+                      onTap: () => context.goNamed(Routes.mapPicker),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(Icons.location_on_outlined),
+                              const SizedBox(width: 8),
+                              Text(AppLocalizations.of(context)!.addLocation),
+                            ],
+                          ),
+                          const Icon(Icons.arrow_forward_ios),
+                        ],
+                      ),
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.location_on_outlined,
+                              color: Colors.blue,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              provider.location!,
+                              style: const TextStyle(color: Colors.blue),
+                            ),
+                          ],
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            provider.setLocation(null, null);
+                          },
+                          child: const Icon(Icons.close),
+                        ),
+                      ],
+                    ),
+            );
+          },
         )
       ],
     );

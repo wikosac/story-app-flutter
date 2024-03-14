@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as img;
 import 'package:story_app/data/api/api_service.dart';
@@ -31,8 +29,8 @@ class StoryProvider extends ChangeNotifier {
     required String desc,
     required String fileName,
     required List<int> bytes,
-    Float? lat,
-    Float? lon,
+    double? lat,
+    double? lon,
   }) async {
     try {
       _setState(ResponseState.loading);
