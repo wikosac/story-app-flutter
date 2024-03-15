@@ -19,8 +19,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final ScrollController scrollController = ScrollController();
-
   Future _onRefresh() async {
     context.read<StoryProvider>().refresh();
   }
@@ -28,27 +26,21 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    final storyProvider = context.read<StoryProvider>();
+    final sp = context.read<StoryProvider>();
 
-    scrollController.addListener(() {
-      if (scrollController.position.pixels >=
-          scrollController.position.maxScrollExtent) {
-        if (storyProvider.pageItems != null) {
-          storyProvider.getAllStories();
+    sp.scrollController.addListener(() {
+      if (sp.scrollController.position.pixels >=
+          sp.scrollController.position.maxScrollExtent) {
+        if (sp.pageItems != null) {
+          sp.getAllStories();
         }
       }
     });
-
-  }
-
-  @override
-  void dispose() {
-    scrollController.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final sp = context.read<StoryProvider>();
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -82,7 +74,7 @@ class _HomePageState extends State<HomePage> {
       body: RefreshIndicator(
         onRefresh: _onRefresh,
         child: SingleChildScrollView(
-          controller: scrollController,
+          controller: sp.scrollController,
           child: _buildContent(context),
         ),
       ),
@@ -255,9 +247,11 @@ class _HomePageState extends State<HomePage> {
         case ResponseState.done:
           return allStory.isNotEmpty
               ? ListView.builder(
-                  itemCount: allStory.length + (provider.pageItems != null ? 1 : 0),
+                  itemCount:
+                      allStory.length + (provider.pageItems != null ? 1 : 0),
                   itemBuilder: (context, index) {
-                    if (index == allStory.length && provider.pageItems != null) {
+                    if (index == allStory.length &&
+                        provider.pageItems != null) {
                       return const Center(
                         child: Padding(
                           padding: EdgeInsets.all(8),

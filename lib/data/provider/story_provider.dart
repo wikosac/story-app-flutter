@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
 import 'package:story_app/data/api/api_service.dart';
 import 'package:story_app/data/model/stories_response.dart';
@@ -12,6 +13,8 @@ class StoryProvider extends ChangeNotifier {
   StoryProvider({required this.apiService, required this.preferences}) {
     getAllStories();
   }
+
+  final ScrollController scrollController = ScrollController();
 
   List<Story> allStory = [];
   List<Story>? _listStory;

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:story_app/data/provider/story_provider.dart';
 import 'package:story_app/route/router.dart';
 import 'package:story_app/ui/home_page.dart';
 import 'package:story_app/ui/profile_page.dart';
@@ -58,6 +60,14 @@ class _NavigationState extends State<Navigation> {
             setState(() {
               _bottomNavIndex = selected;
             });
+          }
+          final provider = context.read<StoryProvider>();
+          if (selected == 0 && provider.pageItems != 1) {
+            provider.scrollController.animateTo(
+              0,
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.easeInOut,
+            );
           }
         },
         iconSize: 28,

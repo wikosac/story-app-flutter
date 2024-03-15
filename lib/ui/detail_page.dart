@@ -20,7 +20,6 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
-
   @override
   void initState() {
     StoryProvider sp = Provider.of(context, listen: false);
