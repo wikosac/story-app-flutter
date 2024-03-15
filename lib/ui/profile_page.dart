@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:story_app/common/common.dart';
 import 'package:story_app/data/model/stories_response.dart';
 import 'package:story_app/data/provider/auth_provider.dart';
 import 'package:story_app/data/provider/story_provider.dart';
 import 'package:story_app/route/router.dart';
 import 'package:story_app/utils/response_state.dart';
-import 'package:story_app/utils/utils.dart';
 import 'package:story_app/utils/widgets.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -18,14 +16,8 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
-
-  void _onRefresh() async {
-    StoryProvider sp = Provider.of(context, listen: false);
-    AuthProvider ap = Provider.of(context, listen: false);
-    sp.getAllStories(ap.token!);
-    _refreshController.refreshCompleted();
+  Future _onRefresh() async {
+    context.read<StoryProvider>().refresh();
   }
 
   @override
@@ -70,122 +62,172 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildContent(AuthProvider auth) {
     return Consumer<StoryProvider>(
       builder: (context, story, _) {
-        List<Story>? listData = story.listStory;
-        List<Story> sortedList = [];
-        if (listData != null) {
-          for (var item in listData) {
-            if (item.name == auth.name) sortedList.add(item);
+        List<Story>? allStory = story.listStory;
+        List<Story> myPost = [];
+        if (allStory != null) {
+          for (var item in allStory) {
+            if (item.name == auth.name) myPost.add(item);
           }
         }
-        return SmartRefresher(
-          controller: _refreshController,
-          onRefresh: () => _onRefresh(),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        return RefreshIndicator(
+          onRefresh: _onRefresh,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         profilePicture(78, 78, 48),
-                        Column(
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Column(
+                              children: [
+                                Text(
+                                  myPost.length.toString(),
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18),
+                                ),
+                                Text(AppLocalizations.of(context)!.posts)
+                              ],
+                            ),
+                            const SizedBox(
+                              width: 32,
+                            ),
+                            Column(
+                              children: [
+                                const Text(
+                                  '0',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                Text(AppLocalizations.of(context)!.followers)
+                              ],
+                            ),
+                            const SizedBox(
+                              width: 32,
+                            ),
+                            Column(
+                              children: [
+                                const Text(
+                                  '0',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                Text(AppLocalizations.of(context)!.following)
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        Row(
                           children: [
                             Text(
-                              sortedList.length.toString(),
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 18),
+                              auth.email,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
                             ),
-                            Text(AppLocalizations.of(context)!.posts)
                           ],
                         ),
-                        Column(
+                        const Row(
                           children: [
-                            const Text(
-                              '0',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                              ),
+                            Text(
+                              '"If there is a will, there is a way"\n THIS IS THE WAY',
                             ),
-                            Text(AppLocalizations.of(context)!.followers)
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            const Text(
-                              '0',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                              ),
-                            ),
-                            Text(AppLocalizations.of(context)!.following)
                           ],
                         ),
                       ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                auth.email,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                          const Row(
-                            children: [
-                              Text(
-                                '"If there is a will, there is a way"\n THIS IS THE WAY',
-                              ),
-                            ],
-                          ),
-                        ],
+                  ),
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      minimumSize:
+                          Size(MediaQuery.of(context).size.width - 32, 42),
+                      backgroundColor: Colors.grey[200],
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    const Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    child: Text('Edit Profile'),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
                       children: [
-                        Icon(Icons.grid_view_outlined, size: 24),
-                        Icon(
-                          Icons.ondemand_video,
-                          size: 24,
-                          color: Colors.grey,
-                        ),
-                        Icon(
-                          Icons.person_pin_outlined,
-                          size: 24,
-                          color: Colors.grey,
+                        Container(
+                          width: 64,
+                          height: 64,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.black,
+                              width: 1.0,
+                            ),
+                          ),
+                          child: const ClipOval(
+                            child: Icon(Icons.add, size: 36),
+                          ),
                         ),
                       ],
                     ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    sortedList.isEmpty
-                        ? SizedBox(
-                            height: MediaQuery.of(context).size.width,
-                            width: MediaQuery.of(context).size.width,
-                            child: Center(
-                              child: Text(
-                                AppLocalizations.of(context)!.noPost,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                  ),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Icon(
+                        Icons.grid_view_outlined,
+                        size: 28,
+                      ),
+                      SizedBox(width: 16),
+                      Icon(
+                        Icons.ondemand_video,
+                        size: 28,
+                        color: Colors.grey,
+                      ),
+                      SizedBox(width: 16),
+                      Icon(
+                        Icons.person_pin_outlined,
+                        size: 28,
+                        color: Colors.grey,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  myPost.isEmpty
+                      ? SizedBox(
+                          height: MediaQuery.of(context).size.width,
+                          width: MediaQuery.of(context).size.width,
+                          child: Center(
+                            child: Text(
+                              AppLocalizations.of(context)!.noPost,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          )
-                        : _buildGridView(sortedList),
-                  ],
-                ),
+                          ),
+                        )
+                      : _buildGridView(myPost),
+                ],
               ),
-            ],
+            ),
           ),
         );
       },
@@ -200,6 +242,7 @@ class _ProfilePageState extends State<ProfilePage> {
         crossAxisSpacing: 4.0,
         mainAxisSpacing: 4.0,
       ),
+      physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (BuildContext context, int index) {
         return GestureDetector(
           onTap: () => context.goNamed(
@@ -230,42 +273,6 @@ class _ProfilePageState extends State<ProfilePage> {
         );
       },
       shrinkWrap: true,
-    );
-  }
-
-  Future<void> _showLogoutConfirmationDialog(BuildContext context) async {
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(AppLocalizations.of(context)!.logout),
-          content: Text(AppLocalizations.of(context)!.logoutDescription),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => context.goNamed(Routes.navigation),
-              child: Text(AppLocalizations.of(context)!.cancel),
-            ),
-            Consumer<AuthProvider>(
-              builder: (context, auth, _) {
-                return TextButton(
-                  onPressed: () {
-                    auth.deleteCredential();
-                    context.goNamed(Routes.login);
-                    showSnackBar(
-                        context, AppLocalizations.of(context)!.loggedOut);
-                  },
-                  child: Text(
-                    AppLocalizations.of(context)!.logout,
-                    style: const TextStyle(
-                      color: Colors.red,
-                    ),
-                  ),
-                );
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 
@@ -306,5 +313,4 @@ class _ProfilePageState extends State<ProfilePage> {
       },
     );
   }
-
 }

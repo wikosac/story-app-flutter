@@ -100,7 +100,7 @@ class _UploadPageState extends State<UploadPage> {
       );
       if (context.mounted) showSnackBar(context, response.message);
       if (response.error == false && context.mounted) {
-        provider.getAllStories(auth.token!);
+        provider.getAllStories();
         context.goNamed(Routes.navigation);
       }
     } else {

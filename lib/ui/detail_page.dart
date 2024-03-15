@@ -3,80 +3,85 @@ import 'package:geocoding/geocoding.dart' as geo;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:story_app/common/common.dart';
-import 'package:story_app/data/api/api_service.dart';
 import 'package:story_app/data/model/stories_response.dart';
-import 'package:story_app/data/provider/auth_provider.dart';
 import 'package:story_app/data/provider/story_provider.dart';
 import 'package:story_app/route/router.dart';
 import 'package:story_app/utils/response_state.dart';
 import 'package:story_app/utils/utils.dart';
 import 'package:story_app/utils/widgets.dart';
 
-class DetailPage extends StatelessWidget {
+class DetailPage extends StatefulWidget {
   const DetailPage({super.key, required this.id});
 
   final String id;
 
   @override
+  State<DetailPage> createState() => _DetailPageState();
+}
+
+class _DetailPageState extends State<DetailPage> {
+
+  @override
+  void initState() {
+    StoryProvider sp = Provider.of(context, listen: false);
+    sp.getDetailStory(widget.id);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProxyProvider<AuthProvider, StoryProvider>(
-      create: (context) => StoryProvider(apiService: ApiService()),
-      update: (context, auth, story) {
-        return story!..getDetailStory(auth.token!, id);
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            AppLocalizations.of(context)!.postTitle,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
-          actions: [
-            Consumer<StoryProvider>(builder: (context, provider, _) {
-              Story? story = provider.story;
-              if (story?.lat != null) {
-                return IconButton(
-                  onPressed: () {
-                    context.goNamed(
-                      Routes.map,
-                      pathParameters: {
-                        'id': id,
-                        'lat': story!.lat.toString(),
-                        'lon': story.lon.toString(),
-                      },
-                    );
-                  },
-                  icon: const Icon(Icons.map),
-                );
-              }
-              return Container();
-            }),
-          ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          AppLocalizations.of(context)!.postTitle,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        body: Consumer<StoryProvider>(builder: (context, provider, _) {
-          Story? story = provider.story;
-          switch (provider.state) {
-            case ResponseState.loading:
-              return const Center(child: CircularProgressIndicator());
-            case ResponseState.done:
-              return story != null
-                  ? _buildContent(context, story)
-                  : Text(AppLocalizations.of(context)!.noData);
-            case ResponseState.error:
-              return Center(
-                  child: Text(AppLocalizations.of(context)!.networkError));
-            case null:
-              return const Text('Error: state null');
-          }
-        }),
-        bottomNavigationBar: Consumer<StoryProvider>(
-          builder: (context, provider, _) {
+        centerTitle: true,
+        actions: [
+          Consumer<StoryProvider>(builder: (context, provider, _) {
             Story? story = provider.story;
-            return provider.state == ResponseState.done && story != null
-                ? _commentField(context)
-                : Container();
-          },
-        ),
+            if (story?.lat != null) {
+              return IconButton(
+                onPressed: () {
+                  context.goNamed(
+                    Routes.map,
+                    pathParameters: {
+                      'id': widget.id,
+                      'lat': story!.lat.toString(),
+                      'lon': story.lon.toString(),
+                    },
+                  );
+                },
+                icon: const Icon(Icons.map),
+              );
+            }
+            return Container();
+          }),
+        ],
+      ),
+      body: Consumer<StoryProvider>(builder: (context, provider, _) {
+        Story? story = provider.story;
+        switch (provider.state) {
+          case ResponseState.loading:
+            return const Center(child: CircularProgressIndicator());
+          case ResponseState.done:
+            return story != null
+                ? _buildContent(context, story)
+                : Text(AppLocalizations.of(context)!.noData);
+          case ResponseState.error:
+            return Center(
+                child: Text(AppLocalizations.of(context)!.networkError));
+          case null:
+            return const Text('Error: state null');
+        }
+      }),
+      bottomNavigationBar: Consumer<StoryProvider>(
+        builder: (context, provider, _) {
+          Story? story = provider.story;
+          return provider.state == ResponseState.done && story != null
+              ? _commentField(context)
+              : Container();
+        },
       ),
     );
   }

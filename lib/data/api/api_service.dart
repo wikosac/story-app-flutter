@@ -71,10 +71,24 @@ class ApiService {
     }
   }
 
-  Future<StoriesResponse> getAllStories(String token) async {
+  Future<StoriesResponse> getPagedStories(String token, [int page = 1, int size = 10]) async {
     try {
       final http.Response response = await http.get(
-        Uri.parse('$_baseUrl/stories'),
+        Uri.parse('$_baseUrl/stories?page=$page&size=$size'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+      return storiesResponseFromJson(response.body);
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  Future<StoriesResponse> getAllStories(String token, [int size = 150]) async {
+    try {
+      final http.Response response = await http.get(
+        Uri.parse('$_baseUrl/stories?size=$size'),
         headers: {
           'Authorization': 'Bearer $token',
         },

@@ -36,7 +36,6 @@ class AuthProvider extends ChangeNotifier {
       _setState(ResponseState.done);
     } catch (e) {
       _setState(ResponseState.error);
-      print('Credential error: $e');
     }
   }
 

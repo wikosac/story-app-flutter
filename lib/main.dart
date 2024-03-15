@@ -30,15 +30,19 @@ class MainApp extends StatelessWidget {
           create: (_) => PictureProvider(),
         ),
         ChangeNotifierProvider(
-          create: (_) => AuthProvider(
+          create: (_) => StoryProvider(
+            apiService: ApiService(),
             preferences: AuthPreferences(
               sharedPreferences: SharedPreferences.getInstance(),
             ),
           ),
         ),
-        ChangeNotifierProxyProvider<AuthProvider, StoryProvider>(
-          create: (_) => StoryProvider(apiService: ApiService()),
-          update: (context, auth, story) => story!..getAllStories(auth.token!),
+        ChangeNotifierProvider(
+          create: (_) => AuthProvider(
+            preferences: AuthPreferences(
+              sharedPreferences: SharedPreferences.getInstance(),
+            ),
+          ),
         ),
       ],
       child: Consumer<AuthProvider>(

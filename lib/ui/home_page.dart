@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart' as geo;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:story_app/common/common.dart';
 import 'package:story_app/data/model/stories_response.dart';
-import 'package:story_app/data/provider/auth_provider.dart';
 import 'package:story_app/data/provider/story_provider.dart';
 import 'package:story_app/route/router.dart';
 import 'package:story_app/utils/response_state.dart';
@@ -21,14 +19,32 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
+  final ScrollController scrollController = ScrollController();
 
-  void _onRefresh() async {
-    StoryProvider sp = Provider.of(context, listen: false);
-    AuthProvider ap = Provider.of(context, listen: false);
-    sp.getAllStories(ap.token!);
-    _refreshController.refreshCompleted();
+  Future _onRefresh() async {
+    context.read<StoryProvider>().refresh();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final storyProvider = context.read<StoryProvider>();
+
+    scrollController.addListener(() {
+      if (scrollController.position.pixels >=
+          scrollController.position.maxScrollExtent) {
+        if (storyProvider.pageItems != null) {
+          storyProvider.getAllStories();
+        }
+      }
+    });
+
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -63,10 +79,10 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(width: 16),
         ],
       ),
-      body: SmartRefresher(
-        controller: _refreshController,
-        onRefresh: () => _onRefresh(),
+      body: RefreshIndicator(
+        onRefresh: _onRefresh,
         child: SingleChildScrollView(
+          controller: scrollController,
           child: _buildContent(context),
         ),
       ),
@@ -226,7 +242,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildPostList(BuildContext context) {
     return Consumer<StoryProvider>(builder: (context, provider, _) {
-      List<Story>? data = provider.listStory;
+      List<Story> allStory = provider.allStory;
       switch (provider.state) {
         case ResponseState.loading:
           return SizedBox(
@@ -237,13 +253,21 @@ class _HomePageState extends State<HomePage> {
             ),
           );
         case ResponseState.done:
-          return data != null
+          return allStory.isNotEmpty
               ? ListView.builder(
-                  itemCount: data.length,
+                  itemCount: allStory.length + (provider.pageItems != null ? 1 : 0),
                   itemBuilder: (context, index) {
+                    if (index == allStory.length && provider.pageItems != null) {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(8),
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    }
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: _postItem(context, data[index]),
+                      child: _postItem(context, allStory[index]),
                     );
                   },
                   shrinkWrap: true,
